@@ -1,0 +1,1081 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import LessonCard from '../components/LessonCard.astro';
+
+// Lecciones completas del sistema - Iguales a las del dashboard principal
+const todayLessons = [
+  {
+    id: 'phishing-basics',
+    title: 'Fundamentos del Phishing',
+    description: 'Aprende a identificar correos electrónicos maliciosos dirigidos al sector financiero colombiano.',
+    duration: '4 min',
+    difficulty: 'Fácil' as const,
+    completed: false,
+    points: 50,
+    category: 'Phishing',
+    icon: '📧'
+  },
+  {
+    id: 'social-engineering',
+    title: 'Ingeniería Social en Entidades Financieras',
+    description: 'Técnicas comunes de manipulación utilizadas contra empleados de instituciones financieras.',
+    duration: '5 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 40,
+    category: 'Ingeniería Social',
+    icon: '🎭'
+  },
+  {
+    id: 'password-security',
+    title: 'Seguridad de Contraseñas',
+    description: 'Mejores prácticas para crear y gestionar contraseñas seguras en entornos financieros.',
+    duration: '3 min',
+    difficulty: 'Fácil' as const,
+    completed: false,
+    points: 20,
+    category: 'Autenticación',
+    icon: '🔐'
+  },
+  {
+    id: 'manipulation-techniques',
+    title: 'Técnicas de Manipulación',
+    description: 'Identifica y combate técnicas psicológicas usadas contra empleados del sector financiero.',
+    duration: '6 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 35,
+    category: 'Psicología',
+    icon: '🧠'
+  },
+  {
+    id: 'pretexting-financial',
+    title: 'Pretexting en el Sector Financiero',
+    description: 'Reconoce y previene ataques de suplantación específicos en instituciones financieras.',
+    duration: '4 min',
+    difficulty: 'Avanzado' as const,
+    completed: false,
+    points: 45,
+    category: 'Pretexting',
+    icon: '🎪'
+  },
+  {
+    id: 'secure-passwords',
+    title: 'Creación de Contraseñas Seguras',
+    description: 'Domina técnicas avanzadas para crear contraseñas robustas que protejan sistemas financieros.',
+    duration: '5 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 35,
+    category: 'Autenticación',
+    icon: '�'
+  },
+  {
+    id: 'two-factor-auth',
+    title: 'Autenticación de Dos Factores',
+    description: 'Implementa y gestiona sistemas 2FA para máxima seguridad en operaciones bancarias.',
+    duration: '4 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 40,
+    category: 'Autenticación',
+    icon: '🛡️'
+  },
+  {
+    id: 'superintendencia-guidelines',
+    title: 'Directrices de la Superintendencia',
+    description: 'Cumple con las normativas de ciberseguridad establecidas por la Superintendencia Financiera de Colombia.',
+    duration: '6 min',
+    difficulty: 'Avanzado' as const,
+    completed: false,
+    points: 50,
+    category: 'Regulatorio',
+    icon: '⚖️'
+  },
+  {
+    id: 'incident-reporting',
+    title: 'Reporte de Incidentes de Seguridad',
+    description: 'Protocolos efectivos para reportar y gestionar incidentes de seguridad en tiempo real.',
+    duration: '4 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 45,
+    category: 'Gestión de Incidentes',
+    icon: '🚨'
+  }
+];
+
+// Organizar lecciones por categorías
+const learningModules = {
+  'Phishing y Correos Maliciosos': todayLessons.filter(lesson => lesson.category === 'Phishing'),
+  'Ingeniería Social y Manipulación': todayLessons.filter(lesson => 
+    lesson.category === 'Ingeniería Social' || lesson.category === 'Psicología' || lesson.category === 'Pretexting'
+  ),
+  'Autenticación y Contraseñas': todayLessons.filter(lesson => lesson.category === 'Autenticación'),
+  'Cumplimiento Regulatorio': todayLessons.filter(lesson => lesson.category === 'Regulatorio'),
+  'Gestión de Incidentes': todayLessons.filter(lesson => lesson.category === 'Gestión de Incidentes')
+};
+
+// Sistema de estadísticas dinámicas conectado al proceso
+const dynamicStats = {
+  totalLessons: 9,
+  completedLessons: 0,
+  totalPoints: 0,
+  availablePoints: 360, // 9 lecciones × 40 puntos cada una
+  averageTime: '5 min',
+  currentLevel: 1,
+  currentLevelPoints: 0,
+  nextLevelPoints: 100
+};
+---
+
+<Layout title="Micro-Learning - SecureLearn Pro">
+  <Navigation />
+  
+  <!-- Header Section -->
+  <section class="bg-gradient-to-r from-green-600 to-teal-600 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-white">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          📚 Micro-Learning
+        </h1>
+        <p class="text-xl text-green-100 mb-8 max-w-3xl mx-auto">
+          Vista previa de lecciones de ciberseguridad. Para estudiar completo, ve al Dashboard principal.
+        </p>
+        <div class="flex justify-center">
+          <button 
+            onclick="window.location.href='/'"
+            class="bg-white text-green-600 px-8 py-3 rounded-lg font-bold hover:bg-green-50 transition-colors transform hover:scale-105"
+          >
+            🎓 Ir al Dashboard para Estudiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progreso y Estadísticas Dinámicas -->
+  <section class="py-12 -mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Descripción de Micro-Learning -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg p-8 mb-12 border border-blue-200">
+        <div class="text-center max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center justify-center gap-3">
+            🧠 ¿Qué es Micro-Learning?
+          </h2>
+          
+          <div class="grid md:grid-cols-2 gap-8 text-left">
+            <div>
+              <h3 class="text-xl font-semibold text-blue-600 mb-4 flex items-center gap-2">
+                ⚡ Aprendizaje Eficiente
+              </h3>
+              <p class="text-gray-700 mb-4">
+                El <strong>Micro-Learning</strong> es una metodología educativa que divide el contenido en pequeñas unidades digestibles de 3-7 minutos. Esta página te permite explorar las lecciones antes de estudiarlas completamente en el Dashboard.
+              </p>
+              <ul class="text-gray-600 space-y-2">
+                <li class="flex items-center gap-2">
+                  <span class="text-green-500">✓</span> Retención mejorada del conocimiento
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-green-500">✓</span> Menor fatiga cognitiva
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-green-500">✓</span> Flexibilidad de horarios
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 class="text-xl font-semibold text-purple-600 mb-4 flex items-center gap-2">
+                🎯 Importancia Moderna
+              </h3>
+              <p class="text-gray-700 mb-4">
+                En la era digital, nuestra capacidad de atención es limitada. El Micro-Learning se adapta a cómo funcionan nuestros cerebros, permitiendo un aprendizaje más efectivo y duradero en ciberseguridad.
+              </p>
+              <ul class="text-gray-600 space-y-2">
+                <li class="flex items-center gap-2">
+                  <span class="text-purple-500">🧠</span> Adaptado al span de atención moderno
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-purple-500">📱</span> Compatible con dispositivos móviles
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-purple-500">⏰</span> Encaja en horarios ocupados
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="mt-8 p-6 bg-white rounded-lg border border-blue-200">
+            <p class="text-lg text-gray-700 italic">
+              "Para aprender profundamente, ve al <strong>Dashboard</strong>. Para explorar y prepararte, usa esta sección de <strong>Micro-Learning</strong>."
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerta Informativa -->
+      <div class="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg mb-12">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-blue-800">
+              👁️ Vista Previa de Lecciones
+            </h3>
+            <div class="mt-2 text-sm text-blue-700">
+              <p>
+                Esta página muestra <strong>vistas previas informativas</strong> de las lecciones disponibles. 
+                Para acceder al <strong>contenido completo interactivo</strong> y ganar puntos, 
+                <a href="/" class="underline font-medium">ve al Dashboard principal</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Módulos de Aprendizaje -->
+      {Object.entries(learningModules).map(([category, lessons]) => (
+        <div class="mb-12">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              {category === 'Phishing y Correos Maliciosos' && '📧'}
+              {category === 'Ingeniería Social y Manipulación' && '🎭'}
+              {category === 'Autenticación y Contraseñas' && '🔐'}
+              {category === 'Cumplimiento Regulatorio' && '📋'}
+              {category === 'Gestión de Incidentes' && '🚨'}
+              <span>{category}</span>
+            </h2>
+            <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+              {lessons.length} lección{lessons.length !== 1 ? 'es' : ''}
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lessons.map((lesson) => (
+              <LessonCard lesson={lesson} />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <!-- Call to Action -->
+      <div class="text-center mt-16">
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white">
+          <h3 class="text-2xl font-bold mb-4">� ¿Listo para aprender?</h3>
+          <p class="text-purple-100 mb-6 max-w-2xl mx-auto">
+            Has explorado las vistas previas de nuestras lecciones. 
+            Ahora ve al Dashboard principal para acceder al contenido completo, 
+            ganar puntos y completar tu entrenamiento en ciberseguridad.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onclick="window.location.href='/'"
+              class="bg-white text-purple-600 px-8 py-3 rounded-lg font-bold hover:bg-purple-50 transition-colors"
+            >
+              🚀 Ir al Dashboard Principal
+            </button>
+            <button 
+              onclick="window.location.href='/simulator'"
+              class="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-purple-600 transition-colors"
+            >
+              🎯 Simulador de Ataques
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de Lección -->
+  <div id="lessonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="modalContent" class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
+      <!-- El contenido del modal se carga dinámicamente aquí -->
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  // @ts-nocheck
+  // Sistema de lecciones para la página de micro-learning
+  class MicroLearningSystem {
+    constructor() {
+      this.initializeEventListeners();
+    }
+
+    initializeEventListeners() {
+      // Event listeners para las tarjetas de lecciones
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-lesson-id]')) {
+          const lessonCard = e.target.closest('[data-lesson-id]');
+          const lessonId = lessonCard.dataset.lessonId;
+          const lessonTitle = lessonCard.dataset.lessonTitle;
+          const lessonPoints = lessonCard.dataset.lessonPoints;
+          
+          this.openLessonModal(lessonId, lessonTitle, lessonPoints);
+        }
+        
+        if (e.target.id === 'closeModal' || e.target.closest('#lessonModal') === e.target) {
+          this.closeLessonModal();
+        }
+        
+        if (e.target.id === 'completeLesson') {
+          this.completeCurrentLesson();
+        }
+      });
+    }
+
+    openLessonModal(lessonId, lessonTitle, lessonPoints) {
+      const modal = document.getElementById('lessonModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      // En micro-learning solo mostramos vista previa informativa
+      const content = this.getLessonPreview(lessonId, lessonTitle, lessonPoints);
+      
+      modalContent.innerHTML = content;
+      
+      // Mostrar modal con animación
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+      }, 50);
+    }
+
+    closeLessonModal() {
+      const modal = document.getElementById('lessonModal');
+      const modalContent = document.getElementById('modalContent');
+      
+      modalContent.classList.add('scale-95', 'opacity-0');
+      modalContent.classList.remove('scale-100', 'opacity-100');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    getLessonPreview(lessonId, lessonTitle, lessonPoints) {
+      const lessonData = this.getLessonData(lessonId);
+      
+      return `
+        <div class="p-8 max-h-[80vh] overflow-y-auto">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                ${lessonData.icon}
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">${lessonTitle}</h2>
+                <p class="text-blue-600 font-medium">🏆 ${lessonPoints} puntos disponibles</p>
+              </div>
+            </div>
+            <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Vista Previa del Contenido -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-l-4 border-blue-400">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">📚 ¿Qué aprenderás en esta lección?</h3>
+              <div class="space-y-3">
+                ${lessonData.learningObjectives.map(objective => `
+                  <div class="flex items-start space-x-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span class="text-gray-700">${objective}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Información de la Lección -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-green-50 p-4 rounded-lg text-center border border-green-200">
+                <div class="text-2xl font-bold text-green-600 mb-1">${lessonData.duration}</div>
+                <div class="text-sm text-green-700">Duración</div>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg text-center border border-purple-200">
+                <div class="text-2xl font-bold text-purple-600 mb-1">${lessonData.difficulty}</div>
+                <div class="text-sm text-purple-700">Dificultad</div>
+              </div>
+              <div class="bg-orange-50 p-4 rounded-lg text-center border border-orange-200">
+                <div class="text-2xl font-bold text-orange-600 mb-1">${lessonData.category}</div>
+                <div class="text-sm text-orange-700">Categoría</div>
+              </div>
+            </div>
+
+            <!-- Contenido Destacado -->
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <h4 class="font-semibold text-gray-800 mb-3">🎯 Contenido Destacado</h4>
+              <div class="space-y-2">
+                ${lessonData.highlights.map(highlight => `
+                  <div class="flex items-center space-x-2">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-gray-700 text-sm">${highlight}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Prerrequisitos -->
+            ${lessonData.prerequisites.length > 0 ? `
+              <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <h4 class="font-semibold text-yellow-800 mb-2">⚠️ Prerrequisitos</h4>
+                <ul class="text-sm text-yellow-700 space-y-1">
+                  ${lessonData.prerequisites.map(prereq => `<li>• ${prereq}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+
+            <!-- Acciones -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+              <button 
+                onclick="window.location.href='/'" 
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <span>📖</span>
+                Ir al Dashboard para Estudiar
+              </button>
+              <button 
+                id="closeModal"
+                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+              >
+                Cerrar Vista Previa
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    getLessonData(lessonId) {
+      const lessonsData = {
+        'phishing-basics': {
+          icon: '📧',
+          duration: '4 min',
+          difficulty: 'Fácil',
+          category: 'Phishing',
+          learningObjectives: [
+            'Identificar características de correos de phishing dirigidos al sector financiero',
+            'Reconocer técnicas comunes de suplantación de entidades bancarias',
+            'Aplicar procedimientos de verificación antes de responder correos',
+            'Reportar correctamente intentos de phishing detectados'
+          ],
+          highlights: [
+            'Casos reales de ataques a bancos colombianos',
+            'Checklist de verificación de correos sospechosos',
+            'Herramientas de análisis de headers de email',
+            'Procedimientos de reporte a autoridades'
+          ],
+          prerequisites: []
+        },
+        'social-engineering': {
+          icon: '🎭',
+          duration: '5 min',
+          difficulty: 'Intermedio',
+          category: 'Ingeniería Social',
+          learningObjectives: [
+            'Comprender técnicas de manipulación psicológica en contextos financieros',
+            'Identificar intentos de ingeniería social por teléfono y presenciales',
+            'Aplicar protocolos de verificación de identidad',
+            'Desarrollar resistencia a técnicas de presión y urgencia'
+          ],
+          highlights: [
+            'Simulaciones de llamadas de ingeniería social',
+            'Frases de defensa para empleados de primera línea',
+            'Técnicas de verificación de identidad por múltiples canales',
+            'Protocolos de escalamiento ante solicitudes sospechosas'
+          ],
+          prerequisites: ['Conocimientos básicos de protocolos bancarios']
+        },
+        'password-security': {
+          icon: '🔐',
+          duration: '3 min',
+          difficulty: 'Fácil',
+          category: 'Autenticación',
+          learningObjectives: [
+            'Crear contraseñas robustas siguiendo estándares internacionales',
+            'Implementar buenas prácticas de gestión de credenciales',
+            'Utilizar gestores de contraseñas corporativos',
+            'Reconocer y evitar ataques de fuerza bruta'
+          ],
+          highlights: [
+            'Calculadora de fortaleza de contraseñas',
+            'Técnicas mnemotécnicas para recordar contraseñas complejas',
+            'Configuración de gestores empresariales',
+            'Políticas de renovación automática'
+          ],
+          prerequisites: []
+        },
+        'manipulation-techniques': {
+          icon: '🧠',
+          duration: '6 min',
+          difficulty: 'Intermedio',
+          category: 'Psicología',
+          learningObjectives: [
+            'Identificar los 6 principios de persuasión utilizados por atacantes',
+            'Desarrollar inmunidad psicológica contra técnicas de manipulación',
+            'Aplicar métodos de verificación antes de acciones críticas',
+            'Reconocer señales de alerta en interacciones sospechosas'
+          ],
+          highlights: [
+            'Análisis de casos reales de manipulación en bancos',
+            'Técnica STOP-THINK-VERIFY para decisiones críticas',
+            'Ejercicios de resistencia a presión psicológica',
+            'Desarrollo de pensamiento crítico en situaciones de estrés'
+          ],
+          prerequisites: ['Fundamentos de Ingeniería Social']
+        },
+        'pretexting-financial': {
+          icon: '🎪',
+          duration: '4 min',
+          difficulty: 'Avanzado',
+          category: 'Pretexting',
+          learningObjectives: [
+            'Identificar narrativas falsas específicas del sector financiero',
+            'Reconocer identidades falsas de reguladores y auditores',
+            'Implementar protocolos de verificación multi-canal',
+            'Documentar y reportar intentos de pretexting'
+          ],
+          highlights: [
+            'Simulador de llamadas de pretexting',
+            'Base de datos de identidades falsas comunes',
+            'Protocolos de verificación con entidades regulatorias',
+            'Casos judiciales de pretexting en Colombia'
+          ],
+          prerequisites: ['Técnicas de Manipulación', 'Ingeniería Social']
+        },
+        'secure-passwords': {
+          icon: '🔑',
+          duration: '5 min',
+          difficulty: 'Intermedio',
+          category: 'Autenticación',
+          learningObjectives: [
+            'Dominar 3 métodos avanzados de creación de contraseñas',
+            'Implementar algoritmos personales para múltiples sistemas',
+            'Evaluar fortaleza mediante métricas de entropía',
+            'Configurar políticas de renovación inteligente'
+          ],
+          highlights: [
+            'Generador de algoritmos personales de contraseñas',
+            'Calculadora de entropía y tiempo de crack',
+            'Integración con sistemas de Single Sign-On',
+            'Auditorías automáticas de fortaleza'
+          ],
+          prerequisites: ['Seguridad de Contraseñas básica']
+        },
+        'two-factor-auth': {
+          icon: '🛡️',
+          duration: '4 min',
+          difficulty: 'Intermedio',
+          category: 'Autenticación',
+          learningObjectives: [
+            'Implementar correctamente sistemas 2FA en entornos bancarios',
+            'Configurar múltiples métodos de segundo factor',
+            'Reconocer y prevenir ataques contra 2FA',
+            'Gestionar tokens de recuperación de emergencia'
+          ],
+          highlights: [
+            'Configuración práctica de Google Authenticator',
+            'Implementación de tokens físicos YubiKey',
+            'Protocolos ante pérdida de dispositivos 2FA',
+            'Cumplimiento con regulaciones SFC'
+          ],
+          prerequisites: ['Creación de Contraseñas Seguras']
+        },
+        'superintendencia-guidelines': {
+          icon: '⚖️',
+          duration: '6 min',
+          difficulty: 'Avanzado',
+          category: 'Regulatorio',
+          learningObjectives: [
+            'Comprender marco regulatorio completo de ciberseguridad SFC',
+            'Implementar controles obligatorios según circulares vigentes',
+            'Preparar reportes de cumplimiento regulatorio',
+            'Evitar sanciones por incumplimiento normativo'
+          ],
+          highlights: [
+            'Análisis detallado de Circulares 007/2018 y 013/2022',
+            'Templates de reportes obligatorios',
+            'Cronograma de implementación de controles',
+            'Calculadora de multas por incumplimiento'
+          ],
+          prerequisites: ['Conocimiento del sistema financiero colombiano']
+        },
+        'incident-reporting': {
+          icon: '🚨',
+          duration: '4 min',
+          difficulty: 'Intermedio',
+          category: 'Gestión de Incidentes',
+          learningObjectives: [
+            'Detectar e identificar incidentes de seguridad en tiempo real',
+            'Aplicar procedimientos de contención inmediata',
+            'Documentar evidencia forense de manera adecuada',
+            'Cumplir plazos de reporte a la SFC (24 horas)'
+          ],
+          highlights: [
+            'Simulador de respuesta a incidentes',
+            'Plantillas de documentación forense',
+            'Cronómetro de cumplimiento de plazos SFC',
+            'Casos reales de incidentes en bancos colombianos'
+          ],
+          prerequisites: ['Directrices de la Superintendencia']
+        }
+      };
+
+      return lessonsData[lessonId] || {
+        icon: '📚',
+        duration: '5 min',
+        difficulty: 'Intermedio',
+        category: 'General',
+        learningObjectives: ['Contenido en desarrollo'],
+        highlights: ['Lección en preparación'],
+        prerequisites: []
+      };
+    }
+
+    completeCurrentLesson() {
+      if (this.currentLessonId && this.currentLessonPoints) {
+        // Usar el sistema de gamificación global
+        if (window.gameSystem) {
+          window.gameSystem.completeLesson(this.currentLessonId, this.currentLessonPoints);
+        }
+        
+        this.closeLessonModal();
+        
+        // Actualizar la UI de la tarjeta
+        const lessonCard = document.querySelector(`[data-lesson-id="${this.currentLessonId}"]`);
+        if (lessonCard) {
+          const button = lessonCard.querySelector('button');
+          if (button) {
+            button.textContent = '✅ Completada';
+            button.className = 'w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium cursor-default';
+            button.disabled = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Inicializar el sistema cuando se carga la página
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔥 DOMContentLoaded fired for Micro-Learning page');
+    
+    // Inicializar sistemas de autenticación y gamificación si no existen
+    if (!window.authSystem) {
+      console.log('🔧 Initializing authSystem...');
+      window.authSystem = {
+        currentUser: null,
+        
+        initialize() {
+          const savedUser = localStorage.getItem('currentUser');
+          if (savedUser) {
+            this.currentUser = JSON.parse(savedUser);
+            console.log('✅ User loaded from localStorage:', this.currentUser);
+          }
+        },
+        
+        isLoggedIn() {
+          return this.currentUser !== null;
+        },
+        
+        getCurrentUser() {
+          return this.currentUser;
+        }
+      };
+      
+      // Inicializar el sistema de autenticación
+      window.authSystem.initialize();
+    }
+    
+    // Inicializar sistema de gamificación si no existe
+    if (!window.gameSystem) {
+      console.log('🔧 Initializing gameSystem...');
+      window.gameSystem = {
+        updateUI() {
+          // Función básica para compatibilidad
+          console.log('gameSystem.updateUI called');
+        }
+      };
+    }
+    
+    window.microLearningSystem = new MicroLearningSystem();
+    
+    // Delay más largo para asegurar que el sistema de autenticación esté completamente cargado
+    setTimeout(() => {
+      console.log('🔥 Executing delayed initializeStatistics...');
+      initializeStatistics();
+    }, 500);
+  });
+
+  // También ejecutar si el DOM ya está listo
+  if (document.readyState !== 'loading') {
+    console.log('📄 Document already loaded, initializing immediately...');
+    setTimeout(() => {
+      console.log('📄 Immediate initialization executing...');
+      initializeStatistics();
+    }, 100);
+  }
+
+  // Sistema de estadísticas dinámicas
+  function initializeStatistics() {
+    console.log('🚀 initializeStatistics() called at:', new Date().toLocaleTimeString());
+    console.log('🚀 Current page URL:', window.location.pathname);
+    
+    // Obtener datos del usuario desde localStorage directamente
+    let currentUser = null;
+    
+    // Método 1: Desde authSystem si está disponible
+    if (window.authSystem && window.authSystem.getCurrentUser) {
+      currentUser = window.authSystem.getCurrentUser();
+      console.log('🚀 User from authSystem:', currentUser);
+    }
+    
+    // Método 2: Directamente desde localStorage
+    if (!currentUser) {
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        console.log('🚀 User from localStorage directly:', currentUser);
+      }
+    }
+    
+    // Método 3: Desde authSystem localStorage
+    if (!currentUser) {
+      const authSystem = JSON.parse(localStorage.getItem('authSystem') || '{}');
+      currentUser = authSystem.currentUser;
+      console.log('🚀 User from authSystem localStorage:', currentUser);
+    }
+    
+    console.log('🚀 Final currentUser:', currentUser);
+    
+    if (!currentUser) {
+      console.log('❌ No authenticated user found - trying all methods failed');
+      return;
+    }
+
+    console.log('✅ Inicializando estadísticas para:', currentUser.email);
+
+    // Obtener progreso del usuario
+    const userProgress = JSON.parse(localStorage.getItem(`userProgress_${currentUser.email}`) || '{}');
+    const gameData = JSON.parse(localStorage.getItem(`gameData_${currentUser.email}`) || '{}');
+    
+    // Calcular estadísticas reales
+    const completedLessons = Object.keys(userProgress).length;
+    const totalPoints = gameData.totalPoints || 0;
+    const currentLevel = gameData.currentLevel || 1;
+    const currentLevelPoints = gameData.currentLevelPoints || 0;
+    const nextLevelPoints = gameData.nextLevelPoints || 100;
+    const streak = calculateStreak(currentUser.email);
+
+    console.log('Estadísticas calculadas:', { completedLessons, totalPoints, currentLevel, streak });
+
+    // Actualizar interfaz de estadísticas
+    updateStatisticsUI({
+      completedLessons,
+      totalPoints,
+      currentLevel,
+      currentLevelPoints,
+      nextLevelPoints,
+      streak
+    });
+
+    // Actualizar logros
+    updateAchievements(completedLessons, totalPoints, currentLevel, streak);
+  }
+
+  function calculateCurrentStreak(streakData, today) {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+    
+    if (streakData.lastStudyDate === today) {
+      return streakData.currentStreak || 1;
+    } else if (streakData.lastStudyDate === yesterday) {
+      return streakData.currentStreak || 0;
+    } else {
+      return 0;
+    }
+  }
+
+  function updateStatisticsUI(stats) {
+    console.log('Updating statistics UI with:', stats);
+    
+    // Solo actualizar las estadísticas mejoradas ya que eliminamos las tarjetas principales
+    updateEnhancedStatistics(stats);
+    
+    // Actualizar logros
+    updateAchievements(stats.completedLessons, stats.totalPoints, stats.currentLevel, stats.streak);
+  }
+
+  function updateEnhancedStatistics(stats) {
+    console.log('updateEnhancedStatistics called with:', stats);
+    console.log('Esta función ya no necesita actualizar elementos DOM ya que se eliminaron las tarjetas principales');
+  }
+
+  function updateAchievements(completedLessons, totalPoints, currentLevel, streak) {
+    const achievementsContainer = document.getElementById('recentAchievements');
+    if (!achievementsContainer) return;
+
+    const achievements = [];
+
+    // Logros por lecciones completadas
+    if (completedLessons >= 1) {
+      achievements.push({
+        title: 'Primera Lección',
+        description: 'Completaste tu primera lección',
+        icon: '🎯',
+        color: 'bg-green-100 text-green-700'
+      });
+    }
+    
+    if (completedLessons >= 3) {
+      achievements.push({
+        title: 'Estudiante Activo',
+        description: 'Completaste 3 lecciones',
+        icon: '📚',
+        color: 'bg-blue-100 text-blue-700'
+      });
+    }
+    
+    if (completedLessons >= 5) {
+      achievements.push({
+        title: 'Experto en Formación',
+        description: 'Completaste 5 lecciones',
+        icon: '🏆',
+        color: 'bg-purple-100 text-purple-700'
+      });
+    }
+
+    // Logros por puntos
+    if (totalPoints >= 100) {
+      achievements.push({
+        title: 'Centurión',
+        description: 'Alcanzaste 100 puntos',
+        icon: '💯',
+        color: 'bg-yellow-100 text-yellow-700'
+      });
+    }
+
+    // Logros por nivel
+    if (currentLevel >= 2) {
+      achievements.push({
+        title: 'Subiendo Niveles',
+        description: `Alcanzaste el nivel ${currentLevel}`,
+        icon: '⭐',
+        color: 'bg-orange-100 text-orange-700'
+      });
+    }
+
+    // Logros por racha
+    if (streak >= 3) {
+      achievements.push({
+        title: 'Estudiante Constante',
+        description: `${streak} días consecutivos`,
+        icon: '🔥',
+        color: 'bg-red-100 text-red-700'
+      });
+    }
+
+    // Mostrar logros (máximo 3 más recientes)
+    if (achievements.length === 0) {
+      achievementsContainer.innerHTML = `
+        <div class="text-center text-gray-500 col-span-full">
+          <p>Completa lecciones en el Dashboard para desbloquear logros</p>
+        </div>
+      `;
+    } else {
+      achievementsContainer.innerHTML = achievements.slice(-3).map(achievement => `
+        <div class="p-4 rounded-lg ${achievement.color} text-center">
+          <div class="text-2xl mb-2">${achievement.icon}</div>
+          <div class="font-semibold text-sm">${achievement.title}</div>
+          <div class="text-xs mt-1 opacity-80">${achievement.description}</div>
+        </div>
+      `).join('');
+    }
+  }
+
+  function calculateStreak(userEmail) {
+    const streakData = JSON.parse(localStorage.getItem(`streak_${userEmail}`) || '{}');
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+    
+    if (streakData.lastStudyDate === today) {
+      return streakData.currentStreak || 1;
+    } else if (streakData.lastStudyDate === yesterday) {
+      return streakData.currentStreak || 0;
+    } else {
+      return 0;
+    }
+  }
+
+  // Actualizar estadísticas cuando el usuario navega de vuelta desde el dashboard
+  window.addEventListener('focus', () => {
+    console.log('Window focus detected, updating statistics...');
+    setTimeout(initializeStatistics, 500);
+  });
+
+  // Escuchar eventos de storage para actualizaciones en tiempo real
+  window.addEventListener('storage', (e) => {
+    if (e.key && (e.key.includes('dailyStats_') || e.key.includes('userProgress_') || e.key.includes('gameData_') || e.key === 'statsUpdateTrigger')) {
+      console.log('Storage change detected:', e.key, 'Value:', e.newValue);
+      if (e.key === 'statsUpdateTrigger') {
+        console.log('Stats update trigger received from Dashboard');
+      }
+      setTimeout(initializeStatistics, 100);
+    }
+  });
+
+  // Funcionalidad del botón "Continuar con la Siguiente Lección"
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'continueNextLesson') {
+      redirectToNextLesson();
+    }
+  });
+
+  function redirectToNextLesson() {
+    console.log('🎯 Redirecting to next lesson...');
+    
+    // Obtener usuario actual
+    let currentUser = null;
+    if (window.authSystem && window.authSystem.getCurrentUser) {
+      currentUser = window.authSystem.getCurrentUser();
+    } else {
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+      }
+    }
+
+    if (!currentUser) {
+      console.log('❌ No authenticated user found');
+      alert('Por favor, inicia sesión para continuar con las lecciones.');
+      return;
+    }
+
+    // Obtener progreso del usuario
+    const userProgress = JSON.parse(localStorage.getItem(`userProgress_${currentUser.email}`) || '{}');
+    console.log('📚 User progress:', userProgress);
+
+    // Lista de lecciones en orden
+    const lessonOrder = [
+      'phishing-basics',
+      'social-engineering', 
+      'password-security',
+      'manipulation-techniques',
+      'secure-communications',
+      'mobile-security',
+      'financial-regulations',
+      'data-protection',
+      'incident-reporting'
+    ];
+
+    // Encontrar la siguiente lección no completada
+    let nextLessonId = null;
+    for (const lessonId of lessonOrder) {
+      if (!userProgress[lessonId]) {
+        nextLessonId = lessonId;
+        break;
+      }
+    }
+
+    if (nextLessonId) {
+      console.log('➡️ Next lesson to complete:', nextLessonId);
+      // Redirigir al Dashboard con la lección específica
+      window.location.href = `/?lesson=${nextLessonId}`;
+    } else {
+      console.log('🎉 All lessons completed!');
+      alert('¡Felicitaciones! Has completado todas las lecciones disponibles. 🎉');
+      // Redirigir al dashboard principal
+      window.location.href = '/';
+    }
+  }
+</script>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg text-center">
+          <div class="text-3xl font-bold text-orange-600 mb-2">85%</div>
+          <div class="text-gray-600">Tasa de Retención</div>
+        </div>
+      </div>
+
+      <!-- Módulos de Aprendizaje -->
+      {Object.entries(learningModules).map(([category, lessons]) => (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            {category === 'Phishing y Correos Maliciosos' && '📧'}
+            {category === 'Ingeniería Social' && '🎭'}
+            {category === 'Seguridad de Contraseñas' && '🔐'}
+            {category === 'Normativas y Cumplimiento' && '📋'}
+            {category}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {lessons.map((lesson) => (
+              <LessonCard lesson={lesson} />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <!-- Ruta de Aprendizaje Recomendada -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-200">
+        <h3 class="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+          🗺️ Ruta de Aprendizaje Recomendada
+        </h3>
+        <p class="text-blue-800 mb-6">
+          Para nuevos empleados o aquellos que buscan una formación completa en ciberseguridad financiera.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">Semana 1</span>
+            </div>
+            <h4 class="font-semibold text-gray-900 text-sm">Fundamentos</h4>
+            <p class="text-gray-600 text-xs">Phishing básico y contraseñas seguras</p>
+          </div>
+          
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">Semana 2</span>
+            </div>
+            <h4 class="font-semibold text-gray-900 text-sm">Ingeniería Social</h4>
+            <p class="text-gray-600 text-xs">Técnicas de manipulación y pretexting</p>
+          </div>
+          
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">Semana 3</span>
+            </div>
+            <h4 class="font-semibold text-gray-900 text-sm">Técnicas Avanzadas</h4>
+            <p class="text-gray-600 text-xs">Spear phishing y análisis técnico</p>
+          </div>
+          
+          <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-200">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">Semana 4</span>
+            </div>
+            <h4 class="font-semibold text-gray-900 text-sm">Cumplimiento</h4>
+            <p class="text-gray-600 text-xs">Normativas y procedimientos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="bg-green-50 py-16">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">
+        ¿Listo para Continuar Aprendiendo?
+      </h2>
+      <p class="text-lg text-gray-600 mb-8">
+        Cada lección completada te acerca más a convertirte en un experto en ciberseguridad financiera.
+      </p>
+      <button id="continueNextLesson" class="bg-green-600 text-white px-8 py-4 rounded-lg font-medium hover:bg-green-700 transition-colors text-lg">
+        Continuar con la Siguiente Lección
+      </button>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,83 @@
+---
+export interface LessonProps {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  difficulty: 'Fácil' | 'Intermedio' | 'Avanzado';
+  completed: boolean;
+  points: number;
+  category: string;
+  icon: string;
+}
+
+export interface Props {
+  lesson: LessonProps;
+  className?: string;
+}
+
+const { lesson, className = "" } = Astro.props;
+
+const difficultyColors = {
+  'Fácil': 'bg-green-100 text-green-800 border-green-200',
+  'Intermedio': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  'Avanzado': 'bg-red-100 text-red-800 border-red-200'
+};
+---
+
+<div class={`bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${className}`}>
+  <div class="flex items-start justify-between mb-4">
+    <div class="flex items-center gap-3">
+      <div class="text-3xl">{lesson.icon}</div>
+      <div>
+        <h3 class="font-semibold text-gray-900 text-lg">{lesson.title}</h3>
+        <p class="text-gray-600 text-sm">{lesson.category}</p>
+      </div>
+    </div>
+    {lesson.completed && (
+      <div class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+        ✓ Completado
+      </div>
+    )}
+  </div>
+  
+  <p class="text-gray-700 text-sm mb-4 leading-relaxed">{lesson.description}</p>
+  
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-4 text-sm text-gray-600">
+      <span class="flex items-center gap-1">
+        ⏱️ {lesson.duration}
+      </span>
+      <span class="flex items-center gap-1">
+        🏆 {lesson.points} pts
+      </span>
+    </div>
+    <span class={`px-2 py-1 rounded-full text-xs font-medium border ${difficultyColors[lesson.difficulty]}`}>
+      {lesson.difficulty}
+    </span>
+  </div>
+  
+  <button 
+    id={`lesson-btn-${lesson.id}`}
+    class="lesson-btn w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 active:transform active:scale-95"
+    data-lesson-id={lesson.id}
+    data-lesson-title={lesson.title}
+    data-lesson-points={lesson.points}
+  >
+    <span class="btn-text" id="btn-text-dashboard" style="display: none;">Comenzar Lección</span>
+    <span class="btn-text" id="btn-text-preview">Ver Vista Previa</span>
+  </button>
+</div>
+
+<script>
+  // Detectar si estamos en la página de micro-learning o dashboard
+  if (window.location.pathname === '/learning') {
+    // En micro-learning, mostrar "Ver Vista Previa"
+    document.querySelectorAll('#btn-text-preview').forEach(el => (el as HTMLElement).style.display = 'inline');
+    document.querySelectorAll('#btn-text-dashboard').forEach(el => (el as HTMLElement).style.display = 'none');
+  } else {
+    // En dashboard, mostrar "Comenzar Lección"
+    document.querySelectorAll('#btn-text-dashboard').forEach(el => (el as HTMLElement).style.display = 'inline');
+    document.querySelectorAll('#btn-text-preview').forEach(el => (el as HTMLElement).style.display = 'none');
+  }
+</script>

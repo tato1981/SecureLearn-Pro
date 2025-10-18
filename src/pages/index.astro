@@ -1,0 +1,3387 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import ProgressCard from '../components/ProgressCard.astro';
+import BadgeCollection from '../components/BadgeCollection.astro';
+import LessonCard from '../components/LessonCard.astro';
+
+// Datos de ejemplo para el dashboard
+const userProgress = {
+  points: 150,
+  level: 2
+};
+
+const badges = [
+  {
+    id: 'first-lesson',
+    name: 'Primer Paso',
+    description: 'Completa tu primera lección',
+    icon: '🎯',
+    earned: true,
+    earnedDate: '15 Oct 2025'
+  },
+  {
+    id: 'phishing-expert',
+    name: 'Detector de Phishing',
+    description: 'Identifica 10 correos maliciosos',
+    icon: '🕵️',
+    earned: true,
+    earnedDate: '16 Oct 2025'
+  },
+  {
+    id: 'week-streak',
+    name: 'Constancia',
+    description: 'Aprende durante 7 días seguidos',
+    icon: '📅',
+    earned: false
+  },
+  {
+    id: 'social-engineer',
+    name: 'Anti-Ingeniería Social',
+    description: 'Domina técnicas de prevención',
+    icon: '🛡️',
+    earned: false
+  }
+];
+
+const todayLessons = [
+  {
+    id: 'phishing-basics',
+    title: 'Fundamentos del Phishing',
+    description: 'Aprende a identificar correos electrónicos maliciosos dirigidos al sector financiero colombiano.',
+    duration: '4 min',
+    difficulty: 'Fácil' as const,
+    completed: false, // Inicialmente sin completar
+    points: 50,
+    category: 'Phishing',
+    icon: '📧'
+  },
+  {
+    id: 'social-engineering',
+    title: 'Ingeniería Social en Entidades Financieras',
+    description: 'Técnicas comunes de manipulación utilizadas contra empleados de instituciones financieras.',
+    duration: '5 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 40,
+    category: 'Ingeniería Social',
+    icon: '🎭'
+  },
+  {
+    id: 'password-security',
+    title: 'Seguridad de Contraseñas',
+    description: 'Mejores prácticas para crear y gestionar contraseñas seguras en entornos financieros.',
+    duration: '3 min',
+    difficulty: 'Fácil' as const,
+    completed: false,
+    points: 20,
+    category: 'Autenticación',
+    icon: '🔐'
+  },
+  {
+    id: 'manipulation-techniques',
+    title: 'Técnicas de Manipulación',
+    description: 'Identifica y combate técnicas psicológicas usadas contra empleados del sector financiero.',
+    duration: '6 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 35,
+    category: 'Psicología',
+    icon: '🧠'
+  },
+  {
+    id: 'pretexting-financial',
+    title: 'Pretexting en el Sector Financiero',
+    description: 'Reconoce y previene ataques de suplantación específicos en instituciones financieras.',
+    duration: '4 min',
+    difficulty: 'Avanzado' as const,
+    completed: false,
+    points: 45,
+    category: 'Pretexting',
+    icon: '🎪'
+  },
+  {
+    id: 'secure-passwords',
+    title: 'Creación de Contraseñas Seguras',
+    description: 'Domina técnicas avanzadas para crear contraseñas robustas que protejan sistemas financieros.',
+    duration: '5 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 35,
+    category: 'Autenticación',
+    icon: '🔑'
+  },
+  {
+    id: 'two-factor-auth',
+    title: 'Autenticación de Dos Factores',
+    description: 'Implementa y gestiona sistemas 2FA para máxima seguridad en operaciones bancarias.',
+    duration: '4 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 40,
+    category: 'Autenticación',
+    icon: '🛡️'
+  },
+  {
+    id: 'superintendencia-guidelines',
+    title: 'Directrices de la Superintendencia',
+    description: 'Cumple con las normativas de ciberseguridad establecidas por la Superintendencia Financiera de Colombia.',
+    duration: '6 min',
+    difficulty: 'Avanzado' as const,
+    completed: false,
+    points: 50,
+    category: 'Regulatorio',
+    icon: '⚖️'
+  },
+  {
+    id: 'incident-reporting',
+    title: 'Reporte de Incidentes de Seguridad',
+    description: 'Protocolos efectivos para reportar y gestionar incidentes de seguridad en tiempo real.',
+    duration: '4 min',
+    difficulty: 'Intermedio' as const,
+    completed: false,
+    points: 45,
+    category: 'Gestión de Incidentes',
+    icon: '🚨'
+  }
+];
+---
+
+<Layout title="SecureLearn Pro - Dashboard">
+  <Navigation />
+  
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center text-white">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span id="welcomeMessage">Bienvenido a</span>
+          <span class="text-yellow-300">SecureLearn Pro</span>
+        </h1>
+        <p class="text-xl text-blue-100 mb-6 max-w-3xl mx-auto">
+          Plataforma de micro-learning gamificada para fortalecer la ciberseguridad en instituciones financieras de Colombia
+        </p>
+        
+        <!-- Sección de Motivación con Recompensas -->
+        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 mb-8 max-w-4xl mx-auto border border-white border-opacity-20">
+          <h2 class="text-2xl font-bold text-yellow-300 mb-4 flex items-center justify-center gap-2">
+            🏆 ¡Tu Aprendizaje Vale Oro!
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+              <div class="text-3xl mb-2">💰</div>
+              <h3 class="font-bold text-yellow-200 mb-1">Bonos Especiales</h3>
+              <p class="text-sm text-blue-100">Detecta y reporta amenazas reales para recibir bonos económicos</p>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+              <div class="text-3xl mb-2">🏖️</div>
+              <h3 class="font-bold text-yellow-200 mb-1">Días de Descanso</h3>
+              <p class="text-sm text-blue-100">Prevén ataques exitosamente y gana días libres adicionales</p>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-lg p-4">
+              <div class="text-3xl mb-2">🎁</div>
+              <h3 class="font-bold text-yellow-200 mb-1">Recompensas Premium</h3>
+              <p class="text-sm text-blue-100">Accede a beneficios exclusivos y reconocimientos especiales</p>
+            </div>
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-blue-100 text-sm">
+              <span class="font-semibold text-yellow-300">¡Cada conocimiento cuenta!</span> 
+              Tu formación en ciberseguridad no solo protege a la empresa, también te recompensa.
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            id="continueeLearningBtn"
+            class="bg-yellow-400 text-blue-900 px-8 py-3 rounded-lg font-bold hover:bg-yellow-300 transition-colors transform hover:scale-105"
+          >
+            🚀 Continuar Aprendiendo
+          </button>
+          <button 
+            id="viewProgressBtn"
+            class="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
+          >
+            📊 Ver Mi Progreso
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Principal -->
+  <section class="py-12 -mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- Progreso del Usuario -->
+        <div class="lg:col-span-2">
+          <ProgressCard points={userProgress.points} level={userProgress.level} />
+        </div>
+        
+        <!-- Estadísticas Dinámicas del Día -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">📊 Estadísticas del Día</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Lecciones completadas hoy</span>
+              <span id="dailyLessonsCompleted" class="font-bold text-blue-600">0/9</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Tiempo de estudio hoy</span>
+              <span id="dailyStudyTime" class="font-bold text-green-600">0 min</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Puntos ganados hoy</span>
+              <span id="dailyPointsEarned" class="font-bold text-purple-600">0 pts</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Racha actual</span>
+              <span id="currentStreak" class="font-bold text-orange-600">0 días</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Meta diaria</span>
+              <span id="dailyGoalProgress" class="font-bold text-indigo-600">0/2 lecciones</span>
+            </div>
+          </div>
+          
+          <!-- Barra de progreso de meta diaria -->
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <div class="flex justify-between text-sm text-gray-600 mb-2">
+              <span>Meta diaria de estudio</span>
+              <span id="dailyGoalPercentage">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="dailyGoalBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lecciones del Día -->
+      <div id="lessonsSection" class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          📚 Lecciones de Hoy
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {todayLessons.map((lesson) => (
+            <LessonCard lesson={lesson} />
+          ))}
+        </div>
+      </div>
+
+      <!-- Insignias -->
+      <div class="mb-12">
+        <BadgeCollection badges={badges} />
+      </div>
+
+      <!-- Alertas de Seguridad -->
+      <div class="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-400 p-6 rounded-lg">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              Alerta de Seguridad - Sector Financiero
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p>
+                Se han detectado nuevas campañas de phishing dirigidas a instituciones bancarias colombianas. 
+                <strong>Completa el módulo "Phishing Avanzado"</strong> para estar preparado.
+              </p>
+            </div>
+            <div class="mt-4">
+              <button class="bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="md:col-span-2">
+          <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+            🛡️ SecureLearn Pro
+          </h3>
+          <p class="text-gray-400 mb-4 max-w-md">
+            Fortaleciendo la ciberseguridad en el sector financiero colombiano a través del aprendizaje gamificado.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Recursos</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors">Guías de Seguridad</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Reportar Incidente</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Centro de Ayuda</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Contacto</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#" class="hover:text-white transition-colors">Soporte Técnico</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Feedback</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Sugerencias</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+        <p>&copy; 2025 SecureLearn Pro. Desarrollado por Slogan Soluciones informática.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Script para personalizar el dashboard -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      personalizeWelcomeMessage();
+      updateUserStats();
+      
+      // Verificar si hay un parámetro de lección en la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const lessonParam = urlParams.get('lesson');
+      
+      if (lessonParam) {
+        console.log('🎯 Auto-opening lesson from URL:', lessonParam);
+        // Delay para asegurar que el sistema de lecciones esté cargado
+        setTimeout(() => {
+          const lessonButton = document.querySelector(`[data-lesson-id="${lessonParam}"]`);
+          if (lessonButton && window.lessonSystem) {
+            lessonButton.click();
+            // Limpiar el parámetro de la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else {
+            console.log('❌ Lesson button not found or lesson system not ready:', lessonParam);
+          }
+        }, 1000);
+      }
+      
+      // Inicializar estadísticas diarias después de que los sistemas se carguen
+      setTimeout(() => {
+        if (window.authSystem && window.authSystem.isLoggedIn()) {
+          const user = window.authSystem.getCurrentUser();
+          if (user) {
+            updateDailyStats(user);
+          }
+        }
+      }, 200);
+
+      // Configurar botones de navegación
+      setupNavigationButtons();
+    });
+
+    function personalizeWelcomeMessage() {
+      if (window.authSystem && window.authSystem.isLoggedIn()) {
+        const user = window.authSystem.getCurrentUser();
+        const welcomeElement = document.getElementById('welcomeMessage');
+        if (welcomeElement && user) {
+          welcomeElement.textContent = `¡Hola ${user.name}! Bienvenido a`;
+        }
+      }
+    }
+
+    function updateUserStats() {
+      if (window.authSystem && window.authSystem.isLoggedIn()) {
+        const user = window.authSystem.getCurrentUser();
+        if (user) {
+          // Actualizar progreso en ProgressCard
+          setTimeout(() => {
+            if (window.gameSystem) {
+              window.gameSystem.syncWithUser(user);
+            }
+            // Actualizar estadísticas del día
+            updateDailyStats(user);
+          }, 100);
+        }
+      }
+    }
+
+    function updateDailyStats(user) {
+      if (!user) return;
+
+      const today = new Date().toDateString();
+      const userEmail = user.email;
+      
+      // Obtener datos del usuario
+      const userProgress = JSON.parse(localStorage.getItem(`userProgress_${userEmail}`) || '{}');
+      const gameData = JSON.parse(localStorage.getItem(`gameData_${userEmail}`) || '{}');
+      const dailyData = JSON.parse(localStorage.getItem(`dailyStats_${userEmail}`) || '{}');
+      const streakData = JSON.parse(localStorage.getItem(`streak_${userEmail}`) || '{}');
+
+      // Calcular estadísticas del día
+      const todaysProgress = dailyData[today] || { lessonsCompleted: 0, pointsEarned: 0, studyTimeMinutes: 0 };
+      const totalLessonsCompleted = Object.keys(userProgress).length;
+      const currentStreak = calculateCurrentStreak(streakData, today);
+      
+      // Meta diaria (2 lecciones por día)
+      const dailyGoal = 2;
+      const dailyProgress = Math.min(todaysProgress.lessonsCompleted, dailyGoal);
+      const dailyGoalPercentage = Math.round((dailyProgress / dailyGoal) * 100);
+
+      // Actualizar interfaz
+      updateDailyStatsUI({
+        dailyLessonsCompleted: todaysProgress.lessonsCompleted,
+        totalLessons: 9,
+        dailyStudyTime: todaysProgress.studyTimeMinutes,
+        dailyPointsEarned: todaysProgress.pointsEarned,
+        currentStreak,
+        dailyGoalProgress: dailyProgress,
+        dailyGoal,
+        dailyGoalPercentage
+      });
+    }
+
+    function updateDailyStatsUI(stats) {
+      // Actualizar elementos de la interfaz
+      const elements = {
+        dailyLessonsCompleted: document.getElementById('dailyLessonsCompleted'),
+        dailyStudyTime: document.getElementById('dailyStudyTime'),
+        dailyPointsEarned: document.getElementById('dailyPointsEarned'),
+        currentStreak: document.getElementById('currentStreak'),
+        dailyGoalProgress: document.getElementById('dailyGoalProgress'),
+        dailyGoalPercentage: document.getElementById('dailyGoalPercentage'),
+        dailyGoalBar: document.getElementById('dailyGoalBar')
+      };
+
+      if (elements.dailyLessonsCompleted) {
+        elements.dailyLessonsCompleted.textContent = `${stats.dailyLessonsCompleted}/${stats.totalLessons}`;
+      }
+
+      if (elements.dailyStudyTime) {
+        elements.dailyStudyTime.textContent = `${stats.dailyStudyTime} min`;
+      }
+
+      if (elements.dailyPointsEarned) {
+        elements.dailyPointsEarned.textContent = `${stats.dailyPointsEarned} pts`;
+      }
+
+      if (elements.currentStreak) {
+        elements.currentStreak.textContent = `${stats.currentStreak} días`;
+      }
+
+      if (elements.dailyGoalProgress) {
+        elements.dailyGoalProgress.textContent = `${stats.dailyGoalProgress}/${stats.dailyGoal} lecciones`;
+      }
+
+      if (elements.dailyGoalPercentage) {
+        elements.dailyGoalPercentage.textContent = `${stats.dailyGoalPercentage}%`;
+      }
+
+      if (elements.dailyGoalBar) {
+        elements.dailyGoalBar.style.width = `${stats.dailyGoalPercentage}%`;
+        
+        // Cambiar color según el progreso
+        if (stats.dailyGoalPercentage >= 100) {
+          elements.dailyGoalBar.className = 'bg-gradient-to-r from-green-500 to-emerald-600 h-2 rounded-full transition-all duration-500';
+        } else if (stats.dailyGoalPercentage >= 50) {
+          elements.dailyGoalBar.className = 'bg-gradient-to-r from-yellow-500 to-orange-600 h-2 rounded-full transition-all duration-500';
+        } else {
+          elements.dailyGoalBar.className = 'bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500';
+        }
+      }
+    }
+
+    function calculateCurrentStreak(streakData, today) {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+      
+      if (streakData.lastStudyDate === today) {
+        return streakData.currentStreak || 1;
+      } else if (streakData.lastStudyDate === yesterday) {
+        return streakData.currentStreak || 0;
+      } else {
+        return 0;
+      }
+    }
+
+    // Función para actualizar estadísticas diarias cuando se completa una lección
+    function updateDailyStatsOnLessonComplete(userEmail, pointsEarned) {
+      const today = new Date().toDateString();
+      const dailyData = JSON.parse(localStorage.getItem(`dailyStats_${userEmail}`) || '{}');
+      
+      if (!dailyData[today]) {
+        dailyData[today] = { lessonsCompleted: 0, pointsEarned: 0, studyTimeMinutes: 0 };
+      }
+      
+      dailyData[today].lessonsCompleted += 1;
+      dailyData[today].pointsEarned += pointsEarned;
+      dailyData[today].studyTimeMinutes += 5; // Aproximadamente 5 minutos por lección
+      
+      localStorage.setItem(`dailyStats_${userEmail}`, JSON.stringify(dailyData));
+      
+      // Actualizar racha
+      updateStreakData(userEmail, today);
+      
+      // Recargar estadísticas
+      if (window.authSystem && window.authSystem.isLoggedIn()) {
+        const user = window.authSystem.getCurrentUser();
+        if (user) {
+          updateDailyStats(user);
+        }
+      }
+    }
+
+    function updateStreakData(userEmail, today) {
+      const streakData = JSON.parse(localStorage.getItem(`streak_${userEmail}`) || '{}');
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+      
+      if (streakData.lastStudyDate === today) {
+        // Ya estudió hoy, no cambiar la racha
+        return;
+      } else if (streakData.lastStudyDate === yesterday) {
+        // Continuó la racha
+        streakData.currentStreak = (streakData.currentStreak || 0) + 1;
+      } else {
+        // Nueva racha
+        streakData.currentStreak = 1;
+      }
+      
+      streakData.lastStudyDate = today;
+      localStorage.setItem(`streak_${userEmail}`, JSON.stringify(streakData));
+    }
+
+    // Hacer las funciones disponibles globalmente para el sistema de lecciones
+    window.updateDailyStatsOnLessonComplete = updateDailyStatsOnLessonComplete;
+
+    // Configurar botones de navegación inteligente
+    function setupNavigationButtons() {
+      const continueBtn = document.getElementById('continueeLearningBtn');
+      const progressBtn = document.getElementById('viewProgressBtn');
+
+      if (continueBtn) {
+        continueBtn.addEventListener('click', () => {
+          navigateToNextLesson();
+        });
+      }
+
+      if (progressBtn) {
+        progressBtn.addEventListener('click', () => {
+          window.location.href = '/profile';
+        });
+      }
+    }
+
+    function navigateToNextLesson() {
+      if (!window.authSystem || !window.authSystem.isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const user = window.authSystem.getCurrentUser();
+      const userProgress = JSON.parse(localStorage.getItem(`userProgress_${user.email}`) || '{}');
+      
+      // Lista de lecciones en orden de progresión
+      const lessonProgression = [
+        'phishing-basics',
+        'social-engineering', 
+        'password-security',
+        'two-factor-auth',
+        'data-protection',
+        'network-security',
+        'compliance-basics',
+        'regulatory-guidelines',
+        'incident-reporting'
+      ];
+
+      // Encontrar la siguiente lección a completar
+      let nextLessonId = null;
+      for (const lessonId of lessonProgression) {
+        if (!userProgress[lessonId]) {
+          nextLessonId = lessonId;
+          break;
+        }
+      }
+
+      if (nextLessonId) {
+        // Abrir modal de la siguiente lección
+        const lessonCard = document.querySelector(`[data-lesson-id="${nextLessonId}"]`);
+        if (lessonCard) {
+          lessonCard.click();
+        } else {
+          // Si no encuentra la tarjeta, hacer scroll a la sección de lecciones
+          const lessonsSection = document.getElementById('lessonsSection');
+          if (lessonsSection) {
+            lessonsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      } else {
+        // Si ha completado todas las lecciones, mostrar mensaje de felicitación
+        showCompletionMessage();
+      }
+    }
+
+    function showCompletionMessage() {
+      // Crear notificación de felicitación
+      const notification = document.createElement('div');
+      notification.className = 'fixed top-4 right-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 rounded-xl shadow-xl z-50 max-w-sm transform transition-all duration-300';
+      notification.style.transform = 'translateX(100%)';
+      
+      notification.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="text-3xl">🎉</div>
+          <div>
+            <h4 class="font-bold text-lg">¡Felicitaciones!</h4>
+            <p class="text-sm text-green-100">Has completado todas las lecciones disponibles. ¡Eres un experto en ciberseguridad!</p>
+            <div class="mt-3 flex gap-2">
+              <button 
+                onclick="window.location.href='/profile'"
+                class="bg-white text-green-600 px-3 py-1 rounded-lg text-xs font-medium hover:bg-green-50"
+              >
+                Ver Logros
+              </button>
+              <button 
+                onclick="window.location.href='/learning'"
+                class="border border-white text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-white hover:text-green-600"
+              >
+                Repasar
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+      
+      // Auto-cerrar después de 8 segundos
+      setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+      }, 8000);
+    }
+  </script>
+
+  <!-- Modal para lecciones -->
+  <div id="lessonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+      <!-- Modal será poblado dinámicamente -->
+    </div>
+  </div>
+
+  <!-- Scripts para el sistema de lecciones -->
+  <script is:inline>
+    // Sistema de lecciones
+    class LessonSystem {
+      constructor() {
+        this.initializeLessons();
+      }
+
+      initializeLessons() {
+        document.addEventListener('DOMContentLoaded', () => {
+          this.bindLessonButtons();
+          this.updateLessonStates();
+        });
+      }
+
+      bindLessonButtons() {
+        const lessonButtons = document.querySelectorAll('.lesson-btn');
+        lessonButtons.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const lessonId = e.target.closest('.lesson-btn').dataset.lessonId;
+            const lessonTitle = e.target.closest('.lesson-btn').dataset.lessonTitle;
+            const lessonPoints = e.target.closest('.lesson-btn').dataset.lessonPoints;
+            
+            this.openLessonModal(lessonId, lessonTitle, lessonPoints);
+          });
+        });
+      }
+
+      updateLessonStates() {
+        if (window.gameSystem) {
+          const lessonButtons = document.querySelectorAll('.lesson-btn');
+          lessonButtons.forEach(btn => {
+            const lessonId = btn.dataset.lessonId;
+            if (window.gameSystem.isLessonCompleted(lessonId)) {
+              this.markLessonCompleted(btn);
+            }
+          });
+        }
+      }
+
+      markLessonCompleted(button) {
+        button.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'text-white');
+        button.classList.add('bg-gray-100', 'text-gray-600', 'cursor-default');
+        button.disabled = true;
+        button.querySelector('.btn-text').textContent = '✓ Lección Completada';
+      }
+
+      openLessonModal(lessonId, lessonTitle, lessonPoints) {
+        const modal = document.getElementById('lessonModal');
+        const modalContent = document.getElementById('modalContent');
+        
+        let content = '';
+        
+        if (lessonId === 'phishing-basics') {
+          content = this.getPhishingBasicsContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'social-engineering') {
+          content = this.getSocialEngineeringContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'password-security') {
+          content = this.getPasswordSecurityContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'manipulation-techniques') {
+          content = this.getManipulationTechniquesContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'pretexting-financial') {
+          content = this.getPretextingFinancialContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'secure-passwords') {
+          content = this.getSecurePasswordsContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'two-factor-auth') {
+          content = this.getTwoFactorAuthContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'superintendencia-guidelines') {
+          content = this.getSuperintendenciaGuidelinesContent(lessonTitle, lessonPoints);
+        } else if (lessonId === 'incident-reporting') {
+          content = this.getIncidentReportingContent(lessonTitle, lessonPoints);
+        } else {
+          content = this.getGenericLessonContent(lessonTitle, lessonPoints);
+        }
+        
+        modalContent.innerHTML = content;
+        
+        // Mostrar modal con animación
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+          modalContent.classList.remove('scale-95', 'opacity-0');
+          modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
+        // Bind close events
+        this.bindModalEvents(lessonId, lessonTitle, lessonPoints);
+      }
+
+      getPhishingBasicsContent(title, points) {
+        return `
+          <div class="p-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                  📧
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900">${title}</h2>
+                  <p class="text-blue-600 font-medium">🏆 ${points} puntos disponibles</p>
+                </div>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ✕
+              </button>
+            </div>
+
+            <!-- Contenido de la lección -->
+            <div class="space-y-6">
+              <!-- Introducción -->
+              <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl border-l-4 border-blue-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🎯 ¿Qué aprenderás?</h3>
+                <p class="text-gray-700">
+                  El phishing es la técnica #1 utilizada por ciberdelincuentes para comprometer instituciones financieras en Colombia. 
+                  Dominarás la identificación de correos maliciosos, técnicas de verificación y protocolos de respuesta institucionales 
+                  para proteger tanto la organización como los clientes.
+                </p>
+              </div>
+
+              <!-- Estadísticas impactantes -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div class="text-2xl font-bold text-red-600">92%</div>
+                  <p class="text-sm text-red-700">de ciberataques exitosos inician con phishing</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <div class="text-2xl font-bold text-orange-600">$18M</div>
+                  <p class="text-sm text-orange-700">pérdida promedio por ataque en sector financiero</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <div class="text-2xl font-bold text-yellow-600">12 seg</div>
+                  <p class="text-sm text-yellow-700">tiempo que toma un usuario en hacer clic en enlace malicioso</p>
+                </div>
+              </div>
+
+              <!-- Tipos de phishing en entidades financieras -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">� Tipos de phishing más comunes:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
+                      <span class="text-red-500 text-2xl">🏦</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Suplantación Bancaria</h4>
+                        <p class="text-sm text-gray-700">Emails que imitan bancos pidiendo "actualizar datos" o "verificar cuenta"</p>
+                        <div class="mt-2 text-xs text-red-600">
+                          <strong>Señal:</strong> Solicitud urgente de datos personales
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <span class="text-orange-500 text-2xl">🎯</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Spear Phishing</h4>
+                        <p class="text-sm text-gray-700">Ataques dirigidos usando información específica del empleado o cliente</p>
+                        <div class="mt-2 text-xs text-orange-600">
+                          <strong>Señal:</strong> Menciona datos específicos para generar confianza
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <span class="text-blue-500 text-2xl">⚖️</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Phishing Regulatorio</h4>
+                        <p class="text-sm text-gray-700">Finge ser de Superfinanciera, UIAF u otras entidades reguladoras</p>
+                        <div class="mt-2 text-xs text-blue-600">
+                          <strong>Señal:</strong> Amenazas de sanciones o multas inmediatas
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                      <span class="text-purple-500 text-2xl">💼</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Business Email Compromise</h4>
+                        <p class="text-sm text-gray-700">Suplanta ejecutivos o proveedores solicitando transferencias urgentes</p>
+                        <div class="mt-2 text-xs text-purple-600">
+                          <strong>Señal:</strong> Solicitudes financieras "urgentes" de altos ejecutivos
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Anatomía de un email phishing -->
+              <div class="bg-gray-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">� Anatomía de un email phishing real:</h3>
+                <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+                  <div class="text-sm">
+                    <div class="grid grid-cols-3 gap-4 font-mono text-xs text-gray-600 mb-3">
+                      <div><strong>De:</strong> noreply@banc0c0lombia-seguridad.com</div>
+                      <div><strong>Para:</strong> jperez@mibanco.co</div>
+                      <div><strong>Fecha:</strong> 17 Oct 2025, 14:30</div>
+                    </div>
+                    <div class="text-lg font-semibold text-red-600 mb-2">
+                      🚨 ALERTA DE SEGURIDAD - Acción Requerida Inmediatamente
+                    </div>
+                    <div class="text-gray-900 space-y-2">
+                      <p>Estimado Juan Pérez,</p>
+                      <p>Nuestro sistema de monitoreo ha detectado <strong>3 intentos de acceso no autorizado</strong> a su cuenta administrativa desde una ubicación en Venezuela.</p>
+                      <p><span class="bg-yellow-100 px-2 py-1 rounded">⏰ Su cuenta será suspendida en 2 horas</span> si no verifica su identidad inmediatamente.</p>
+                      <p>Haga clic aquí para verificar: <a href="#" class="text-blue-600 underline font-semibold">https://verificacion-banc0c0lombia.com/urgente</a></p>
+                      <p class="text-sm text-gray-600">Si no realizó esta solicitud, ignore este mensaje.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Análisis del phishing -->
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h4 class="font-semibold text-red-800 mb-2">🚩 Señales de alerta:</h4>
+                    <ul class="text-sm text-red-700 space-y-1">
+                      <li>• Dominio falso: banc0c0lombia (0 en lugar de o)</li>
+                      <li>• Urgencia artificial: "2 horas"</li>
+                      <li>• Información específica: nombre del empleado</li>
+                      <li>• URL sospechosa: dominio no oficial</li>
+                      <li>• Crear ansiedad: "acceso no autorizado"</li>
+                    </ul>
+                  </div>
+                  
+                  <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h4 class="font-semibold text-green-800 mb-2">✅ Respuesta correcta:</h4>
+                    <ol class="text-sm text-green-700 space-y-1">
+                      <li>1. NO hacer clic en el enlace</li>
+                      <li>2. Verificar dirección del remitente</li>
+                      <li>3. Contactar IT por canal oficial</li>
+                      <li>4. Reenviar email a security@mibanco.co</li>
+                      <li>5. Eliminar email del buzón</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Herramientas de verificación -->
+              <div class="bg-blue-50 p-6 rounded-xl border-l-4 border-blue-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🛠️ Herramientas de verificación inmediata:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-blue-800 mb-2">📊 Verificación técnica:</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Hover sobre enlaces:</strong> Ver URL real sin hacer clic</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Revisar headers:</strong> Verificar origen real del email</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Análisis de dominio:</strong> Confirmar legitimidad del remitente</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-blue-800 mb-2">📞 Verificación humana:</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Llamar directamente:</strong> Al número oficial de la entidad</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Consultar con supervisor:</strong> Validar solicitudes sospechosas</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Contactar IT:</strong> Por canal interno oficial</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Protocolo institucional -->
+              <div class="bg-green-50 p-6 rounded-xl border-l-4 border-green-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🛡️ Protocolo institucional anti-phishing:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">🔍 Detección:</h4>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>• Revisar remitente</li>
+                      <li>• Analizar urgencia</li>
+                      <li>• Verificar enlaces</li>
+                      <li>• Validar contenido</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">📢 Reporte:</h4>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>• Reenviar a security@</li>
+                      <li>• Alertar al equipo</li>
+                      <li>• Documentar incidente</li>
+                      <li>• Seguir procedimiento</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">🧹 Remediación:</h4>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>• Eliminar email</li>
+                      <li>• Bloquear remitente</li>
+                      <li>• Informar a usuarios</li>
+                      <li>• Actualizar filtros</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Frases clave para recordar -->
+              <div class="bg-yellow-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">💡 Reglas de oro anti-phishing:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-3">
+                    <div class="p-3 bg-white rounded-lg border border-yellow-200">
+                      <p class="text-gray-900 font-medium">"Si suena urgente, probablemente sea falso"</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-yellow-200">
+                      <p class="text-gray-900 font-medium">"Siempre verificar por canal oficial antes de actuar"</p>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="p-3 bg-white rounded-lg border border-yellow-200">
+                      <p class="text-gray-900 font-medium">"Los bancos nunca piden contraseñas por email"</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-yellow-200">
+                      <p class="text-gray-900 font-medium">"En caso de duda, mejor reportar y preguntar"</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer con botón de completar -->
+            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+              <div class="text-sm text-gray-600">
+                <span class="flex items-center gap-2">
+                  ⏱️ Tiempo estimado: 4 minutos
+                </span>
+              </div>
+              <button 
+                id="completeLesson" 
+                class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+              >
+                <span>🏆</span>
+                Finalizar Lección (+${points} pts)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      getSocialEngineeringContent(title, points) {
+        return `
+          <div class="p-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-2xl">
+                  🎭
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900">${title}</h2>
+                  <p class="text-purple-600 font-medium">🏆 ${points} puntos disponibles</p>
+                </div>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ✕
+              </button>
+            </div>
+
+            <!-- Contenido de la lección -->
+            <div class="space-y-6">
+              <!-- Introducción -->
+              <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border-l-4 border-purple-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🎯 ¿Qué aprenderás?</h3>
+                <p class="text-gray-700">
+                  La ingeniería social es el arte de manipular personas para obtener información confidencial. 
+                  En el sector financiero colombiano, estos ataques representan el 60% de las brechas de seguridad. 
+                  Aprenderás a identificar y defenderte de estas técnicas psicológicas.
+                </p>
+              </div>
+
+              <!-- Estadísticas impactantes -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div class="text-2xl font-bold text-red-600">60%</div>
+                  <p class="text-sm text-red-700">de brechas inician con ingeniería social</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <div class="text-2xl font-bold text-orange-600">$25M</div>
+                  <p class="text-sm text-orange-700">pérdida promedio por ataque exitoso</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                  <div class="text-2xl font-bold text-purple-600">15 seg</div>
+                  <p class="text-sm text-purple-700">tiempo promedio para convencer a una víctima</p>
+                </div>
+              </div>
+
+              <!-- Técnicas principales -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">🎭 Técnicas más comunes en entidades financieras:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
+                      <span class="text-red-500 text-2xl">📞</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Vishing (Llamadas)</h4>
+                        <p class="text-sm text-gray-700">"Soy del área de sistemas, necesito verificar su contraseña por seguridad"</p>
+                        <div class="mt-2 text-xs text-red-600">
+                          <strong>Señal:</strong> Solicitud urgente de información personal
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <span class="text-orange-500 text-2xl">🎪</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Pretexting (Suplantación)</h4>
+                        <p class="text-sm text-gray-700">"Soy nuevo en auditoría interna, ¿me puedes explicar cómo acceder al sistema?"</p>
+                        <div class="mt-2 text-xs text-orange-600">
+                          <strong>Señal:</strong> Persona desconocida pidiendo accesos
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <span class="text-blue-500 text-2xl">🎁</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Baiting (Carnada)</h4>
+                        <p class="text-sm text-gray-700">USB "perdida" en el parqueadero con etiqueta "Bonos empleados 2025"</p>
+                        <div class="mt-2 text-xs text-blue-600">
+                          <strong>Señal:</strong> Dispositivos o ofertas muy tentadoras
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                      <span class="text-purple-500 text-2xl">👥</span>
+                      <div>
+                        <h4 class="font-semibold text-gray-900">Tailgating (Seguimiento)</h4>
+                        <p class="text-sm text-gray-700">"Disculpe, se me olvidó la tarjeta, ¿me puede dejar entrar?"</p>
+                        <div class="mt-2 text-xs text-purple-600">
+                          <strong>Señal:</strong> Persona siguiendo sin credenciales propias
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Escenario real -->
+              <div class="bg-gray-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">📞 Caso real - Ataque vishing:</h3>
+                <div class="bg-white p-4 rounded-lg border border-gray-200 space-y-3">
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                      <span class="text-red-600 text-sm">👤</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-sm text-gray-600"><strong>Atacante:</strong></div>
+                      <div class="text-gray-900">"Buenos días, habla Carlos del departamento de IT. Detectamos actividad sospechosa en su usuario. Por seguridad, necesito que me confirme su contraseña actual para reestablecerla."</div>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                      <span class="text-green-600 text-sm">👤</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="text-sm text-gray-600"><strong>Empleado (respuesta correcta):</strong></div>
+                      <div class="text-gray-900">"No proporciono contraseñas por teléfono. Voy a verificar con mi supervisor y luego los contacto por el canal oficial."</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div class="text-sm text-green-700">
+                    <strong>✅ Respuesta correcta:</strong> Nunca dar información sensible por teléfono, siempre verificar por canales oficiales.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Principios psicológicos -->
+              <div class="bg-yellow-50 p-6 rounded-xl border-l-4 border-yellow-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🧠 Principios psicológicos que usan:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-3">
+                    <div class="flex items-start gap-2">
+                      <span class="text-yellow-600">⏰</span>
+                      <div>
+                        <strong>Urgencia:</strong>
+                        <p class="text-sm text-gray-700">"Debe actuar ahora o habrá consecuencias"</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span class="text-yellow-600">👑</span>
+                      <div>
+                        <strong>Autoridad:</strong>
+                        <p class="text-sm text-gray-700">"Soy del área de auditoría/gerencia"</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex items-start gap-2">
+                      <span class="text-yellow-600">❤️</span>
+                      <div>
+                        <strong>Reciprocidad:</strong>
+                        <p class="text-sm text-gray-700">"Te ayudo con esto, tú me ayudas con aquello"</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                      <span class="text-yellow-600">😰</span>
+                      <div>
+                        <strong>Miedo:</strong>
+                        <p class="text-sm text-gray-700">"Su cuenta será bloqueada permanentemente"</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Protocolo de defensa -->
+              <div class="bg-green-50 p-6 rounded-xl border-l-4 border-green-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🛡️ Protocolo de defensa institucional:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">📞 Si recibe llamada sospechosa:</h4>
+                    <ol class="space-y-1 text-sm text-gray-700">
+                      <li><strong>1.</strong> Tome nota del nombre y departamento</li>
+                      <li><strong>2.</strong> Solicite número de empleado</li>
+                      <li><strong>3.</strong> Termine la llamada educadamente</li>
+                      <li><strong>4.</strong> Verifique por canal oficial</li>
+                      <li><strong>5.</strong> Reporte al equipo de seguridad</li>
+                    </ol>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">🚪 Si alguien pide acceso físico:</h4>
+                    <ol class="space-y-1 text-sm text-gray-700">
+                      <li><strong>1.</strong> Solicite identificación oficial</li>
+                      <li><strong>2.</strong> Verifique con recepción/seguridad</li>
+                      <li><strong>3.</strong> Acompañe al visitante siempre</li>
+                      <li><strong>4.</strong> No permita acceso a áreas restringidas</li>
+                      <li><strong>5.</strong> Documente la visita</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Frases que debe recordar -->
+              <div class="bg-blue-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">💬 Frases de defensa que debe memorizar:</h3>
+                <div class="space-y-3">
+                  <div class="p-3 bg-white rounded-lg border border-blue-200">
+                    <p class="text-gray-900 font-medium">"Por políticas de seguridad, debo verificar esta solicitud por el canal oficial."</p>
+                  </div>
+                  <div class="p-3 bg-white rounded-lg border border-blue-200">
+                    <p class="text-gray-900 font-medium">"No estoy autorizado a proporcionar esa información. Lo dirijo con mi supervisor."</p>
+                  </div>
+                  <div class="p-3 bg-white rounded-lg border border-blue-200">
+                    <p class="text-gray-900 font-medium">"Necesito ver su identificación y autorización escrita para proceder."</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer con botón de completar -->
+            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+              <div class="text-sm text-gray-600">
+                <span class="flex items-center gap-2">
+                  ⏱️ Tiempo estimado: 5 minutos
+                </span>
+              </div>
+              <button 
+                id="completeLesson" 
+                class="bg-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <span>🏆</span>
+                Finalizar Lección (+${points} pts)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      getPasswordSecurityContent(title, points) {
+        return `
+          <div class="p-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">
+                  🔐
+                </div>
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900">${title}</h2>
+                  <p class="text-green-600 font-medium">🏆 ${points} puntos disponibles</p>
+                </div>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ✕
+              </button>
+            </div>
+
+            <!-- Contenido de la lección -->
+            <div class="space-y-6">
+              <!-- Introducción -->
+              <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border-l-4 border-green-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🎯 ¿Qué aprenderás?</h3>
+                <p class="text-gray-700">
+                  Las contraseñas son la primera línea de defensa en instituciones financieras. El 81% de las brechas de datos 
+                  involucran contraseñas comprometidas. Dominarás las mejores prácticas para crear, gestionar y proteger 
+                  credenciales en entornos bancarios de alto riesgo.
+                </p>
+              </div>
+
+              <!-- Estadísticas impactantes -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div class="text-2xl font-bold text-red-600">81%</div>
+                  <p class="text-sm text-red-700">de brechas de datos involucran contraseñas débiles</p>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <div class="text-2xl font-bold text-orange-600">2.9 seg</div>
+                  <p class="text-sm text-orange-700">tiempo para crackear "123456" con herramientas modernas</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div class="text-2xl font-bold text-green-600">300 años</div>
+                  <p class="text-sm text-green-700">tiempo para crackear contraseña segura de 14 caracteres</p>
+                </div>
+              </div>
+
+              <!-- Anatomía de contraseña segura -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">🏗️ Anatomía de una contraseña empresarial segura:</h3>
+                <div class="bg-white p-6 rounded-lg border border-gray-200">
+                  <div class="space-y-4">
+                    <!-- Ejemplo de contraseña segura -->
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                      <h4 class="font-semibold text-green-800 mb-2">✅ Ejemplo correcto:</h4>
+                      <div class="font-mono text-lg bg-white p-3 rounded border">
+                        <span class="text-blue-600">Banco</span><span class="text-green-600">2025</span><span class="text-purple-600">!</span><span class="text-orange-600">Seg</span><span class="text-red-600">@</span><span class="text-indigo-600">Col</span><span class="text-pink-600">$</span>
+                      </div>
+                      <p class="text-sm text-green-700 mt-2"><strong>Banco2025!Seg@Col$</strong> - 17 caracteres, múltiples tipos</p>
+                    </div>
+                    
+                    <!-- Desglose de componentes -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm">🔤</div>
+                          <div>
+                            <div class="font-medium">Mayúsculas y minúsculas</div>
+                            <div class="text-sm text-gray-600">"Banco", "Seg", "Col"</div>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-sm">🔢</div>
+                          <div>
+                            <div class="font-medium">Números</div>
+                            <div class="text-sm text-gray-600">"2025" (año actual relevante)</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm">🔣</div>
+                          <div>
+                            <div class="font-medium">Símbolos especiales</div>
+                            <div class="text-sm text-gray-600">"!", "@", "$" (fáciles de recordar)</div>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-sm">📏</div>
+                          <div>
+                            <div class="font-medium">Longitud apropiada</div>
+                            <div class="text-sm text-gray-600">17 caracteres (mínimo 12 recomendado)</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Técnicas de creación de contraseñas -->
+              <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-gray-900">🧠 Técnicas profesionales para crear contraseñas:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-4">
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h4 class="font-semibold text-blue-800 mb-2">🎭 Método de la Frase</h4>
+                      <div class="text-sm text-gray-700 space-y-2">
+                        <p><strong>Frase:</strong> "Mi banco tiene 500 empleados en 2025!"</p>
+                        <p><strong>Contraseña:</strong> <span class="font-mono bg-white px-2 py-1 rounded">MbT500eE2025!</span></p>
+                        <p class="text-blue-600">Toma la primera letra de cada palabra + números</p>
+                      </div>
+                    </div>
+                    
+                    <div class="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                      <h4 class="font-semibold text-purple-800 mb-2">🔄 Método de Sustitución</h4>
+                      <div class="text-sm text-gray-700 space-y-2">
+                        <p><strong>Base:</strong> "BancoSeguro"</p>
+                        <p><strong>Sustituciones:</strong> a→@, o→0, e→3</p>
+                        <p><strong>Resultado:</strong> <span class="font-mono bg-white px-2 py-1 rounded">B@nc0S3gur0#2025</span></p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="space-y-4">
+                    <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                      <h4 class="font-semibold text-green-800 mb-2">🏢 Método Contextual</h4>
+                      <div class="text-sm text-gray-700 space-y-2">
+                        <p><strong>Contexto:</strong> Trabajas en el piso 15, oficina 203</p>
+                        <p><strong>Sistema:</strong> Aplicación de créditos</p>
+                        <p><strong>Contraseña:</strong> <span class="font-mono bg-white px-2 py-1 rounded">Piso15#Ofi203$Cred</span></p>
+                      </div>
+                    </div>
+                    
+                    <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                      <h4 class="font-semibold text-orange-800 mb-2">🎲 Método de Palabras Aleatorias</h4>
+                      <div class="text-sm text-gray-700 space-y-2">
+                        <p><strong>Palabras:</strong> "Café + Luna + Tigre + 2025"</p>
+                        <p><strong>Conectores:</strong> Símbolos entre palabras</p>
+                        <p><strong>Resultado:</strong> <span class="font-mono bg-white px-2 py-1 rounded">Cafe*Luna&Tigre@2025</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contraseñas específicas por sistema -->
+              <div class="bg-yellow-50 p-6 rounded-xl border-l-4 border-yellow-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🏦 Estrategia por sistemas bancarios:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="font-semibold text-yellow-800 mb-2">💳 Core Bancario</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                      <li>• Mínimo 16 caracteres</li>
+                      <li>• Cambio cada 60 días</li>
+                      <li>• Sin palabras del diccionario</li>
+                      <li>• Incluir ID del empleado</li>
+                    </ul>
+                  </div>
+                  <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="font-semibold text-yellow-800 mb-2">📧 Email Corporativo</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                      <li>• Diferente al core bancario</li>
+                      <li>• Incluir nombre del departamento</li>
+                      <li>• Cambio cada 90 días</li>
+                      <li>• 2FA obligatorio</li>
+                    </ul>
+                  </div>
+                  <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="font-semibold text-yellow-800 mb-2">🌐 Aplicaciones Web</h4>
+                    <ul class="text-sm text-gray-700 space-y-1">
+                      <li>• Única por aplicación</li>
+                      <li>• Incluir nombre del sistema</li>
+                      <li>• Gestionar con password manager</li>
+                      <li>• Verificar HTTPS siempre</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Errores comunes que EVITAR -->
+              <div class="bg-red-50 p-6 rounded-xl border-l-4 border-red-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">❌ Errores críticos en entidades financieras:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-3">
+                    <div class="bg-white p-3 rounded-lg border border-red-200">
+                      <div class="flex items-start gap-3">
+                        <span class="text-red-500 text-xl">🚫</span>
+                        <div>
+                          <h4 class="font-semibold text-red-800">Información personal</h4>
+                          <p class="text-sm text-gray-700">Fechas de nacimiento, nombres de hijos, direcciones</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-red-200">
+                      <div class="flex items-start gap-3">
+                        <span class="text-red-500 text-xl">🔄</span>
+                        <div>
+                          <h4 class="font-semibold text-red-800">Reutilizar contraseñas</h4>
+                          <p class="text-sm text-gray-700">Misma contraseña para múltiples sistemas</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="bg-white p-3 rounded-lg border border-red-200">
+                      <div class="flex items-start gap-3">
+                        <span class="text-red-500 text-xl">📝</span>
+                        <div>
+                          <h4 class="font-semibold text-red-800">Escribir contraseñas</h4>
+                          <p class="text-sm text-gray-700">Post-its, documentos no encriptados, notas físicas</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-red-200">
+                      <div class="flex items-start gap-3">
+                        <span class="text-red-500 text-xl">🤝</span>
+                        <div>
+                          <h4 class="font-semibold text-red-800">Compartir credenciales</h4>
+                          <p class="text-sm text-gray-700">Dar contraseñas a compañeros, aunque sea "temporal"</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gestores de contraseñas recomendados -->
+              <div class="bg-blue-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🛠️ Gestores de contraseñas empresariales:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-blue-800 mb-3">✅ Opciones institucionales:</h4>
+                    <div class="space-y-3">
+                      <div class="bg-white p-3 rounded-lg border">
+                        <div class="flex items-center gap-3">
+                          <span class="text-blue-600 text-xl">🏢</span>
+                          <div>
+                            <h5 class="font-semibold">Microsoft Authenticator</h5>
+                            <p class="text-sm text-gray-600">Integrado con Office 365, 2FA incluido</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="bg-white p-3 rounded-lg border">
+                        <div class="flex items-center gap-3">
+                          <span class="text-green-600 text-xl">🔐</span>
+                          <div>
+                            <h5 class="font-semibold">Bitwarden Business</h5>
+                            <p class="text-sm text-gray-600">Open source, auditable, compartición segura</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-blue-800 mb-3">🔧 Funcionalidades clave:</h4>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Generación automática:</strong> Contraseñas únicas de 16+ caracteres</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Autocompletado seguro:</strong> Solo en sitios verificados</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Alertas de seguridad:</strong> Contraseñas comprometidas</span>
+                      </li>
+                      <li class="flex items-start gap-2">
+                        <span class="text-blue-600">•</span>
+                        <span><strong>Auditoría:</strong> Reportes de fortaleza y reutilización</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Protocolo de cambio de contraseñas -->
+              <div class="bg-green-50 p-6 rounded-xl border-l-4 border-green-400">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">🔄 Protocolo de cambio de contraseñas:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">📅 Programado:</h4>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>• Core bancario: cada 60 días</li>
+                      <li>• Email: cada 90 días</li>
+                      <li>• Aplicaciones: cada 120 días</li>
+                      <li>• VPN: cada 30 días</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">🚨 Inmediato:</h4>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>• Sospecha de compromiso</li>
+                      <li>• Cambio de empleado</li>
+                      <li>• Alerta de seguridad</li>
+                      <li>• Acceso no autorizado</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-green-800 mb-2">📋 Proceso:</h4>
+                    <ol class="space-y-1 text-sm text-gray-700">
+                      <li>1. Generar nueva contraseña</li>
+                      <li>2. Cambiar en horario no crítico</li>
+                      <li>3. Verificar acceso en todos los sistemas</li>
+                      <li>4. Documentar en sistema de auditoría</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Checklist de seguridad -->
+              <div class="bg-purple-50 p-6 rounded-xl">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">✅ Checklist diario de seguridad de contraseñas:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Verificar que no hay contraseñas guardadas en navegador</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Confirmar que todas las sesiones están cerradas al salir</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Revisar alertas del gestor de contraseñas</span>
+                    </label>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Verificar actividad sospechosa en cuentas</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Confirmar que 2FA está activo en todos los sistemas</span>
+                    </label>
+                    <label class="flex items-center gap-3">
+                      <input type="checkbox" class="w-4 h-4 text-purple-600">
+                      <span class="text-sm">Eliminar contraseñas temporales o de prueba</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer con botón de completar -->
+            <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+              <div class="text-sm text-gray-600">
+                <span class="flex items-center gap-2">
+                  ⏱️ Tiempo estimado: 3 minutos
+                </span>
+              </div>
+              <button 
+                id="completeLesson" 
+                class="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center gap-2"
+              >
+                <span>🏆</span>
+                Finalizar Lección (+${points} pts)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      getManipulationTechniquesContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Técnicas de Manipulación</h2>
+                <p class="text-blue-600 font-medium">🏆 45 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🧠 Introducción a la Manipulación Psicológica</h3>
+                <p class="text-gray-700 mb-4">
+                  La manipulación psicológica en el sector financiero aprovecha principios psicológicos para influir en las decisiones 
+                  de empleados y clientes. Los atacantes utilizan técnicas sofisticadas basadas en la psicología humana para obtener 
+                  información confidencial o acceso no autorizado.
+                </p>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎯 Principios Psicológicos Utilizados</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                    <h4 class="font-semibold text-red-800 mb-2">1. Principio de Autoridad</h4>
+                    <p class="text-red-700 text-sm">Los atacantes se hacen pasar por figuras de autoridad (gerentes, auditores, reguladores) para obtener compliance inmediato.</p>
+                  </div>
+                  <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                    <h4 class="font-semibold text-orange-800 mb-2">2. Urgencia y Escasez</h4>
+                    <p class="text-orange-700 text-sm">Crean presión temporal alegando emergencias o deadlines críticos para evitar que la víctima reflexione.</p>
+                  </div>
+                  <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h4 class="font-semibold text-yellow-800 mb-2">3. Reciprocidad</h4>
+                    <p class="text-yellow-700 text-sm">Ofrecen "favores" o información aparentemente valiosa para generar obligación de devolver el gesto.</p>
+                  </div>
+                  <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                    <h4 class="font-semibold text-purple-800 mb-2">4. Validación Social</h4>
+                    <p class="text-purple-700 text-sm">Mencionan que "otros departamentos ya lo hicieron" para normalizar la solicitud inusual.</p>
+                  </div>
+                  <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 class="font-semibold text-blue-800 mb-2">5. Simpatía y Rapport</h4>
+                    <p class="text-blue-700 text-sm">Establecen conexión personal para generar confianza antes de hacer solicitudes comprometedoras.</p>
+                  </div>
+                  <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 class="font-semibold text-green-800 mb-2">6. Compromiso y Consistencia</h4>
+                    <p class="text-green-700 text-sm">Logran pequeños compromisos iniciales que escalan hacia solicitudes más significativas.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Casos de Estudio Reales</h3>
+                
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg">
+                  <h4 class="font-semibold text-gray-800 mb-3">Caso 1: El Falso Auditor Externo</h4>
+                  <div class="text-sm text-gray-700 space-y-2">
+                    <p><strong>Situación:</strong> Un atacante llama haciéndose pasar por auditor de la Superintendencia Financiera, solicitando verificación urgente de sistemas de seguridad.</p>
+                    <p><strong>Técnicas utilizadas:</strong> Autoridad (regulador), urgencia (inspección inmediata), validación social ("otros bancos ya respondieron").</p>
+                    <p><strong>Resultado:</strong> El empleado proporcionó credenciales de acceso administrativo.</p>
+                    <p class="text-red-600"><strong>Lección:</strong> Siempre verificar identidad a través de canales oficiales independientes.</p>
+                  </div>
+                </div>
+
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg">
+                  <h4 class="font-semibold text-gray-800 mb-3">Caso 2: La Emergencia del CEO</h4>
+                  <div class="text-sm text-gray-700 space-y-2">
+                    <p><strong>Situación:</strong> Email aparentemente del CEO solicitando transferencia urgente mientras está "en reunión importante".</p>
+                    <p><strong>Técnicas utilizadas:</strong> Autoridad (CEO), urgencia (reunión), compromiso (confidencialidad).</p>
+                    <p><strong>Resultado:</strong> Transferencia de $50,000 USD a cuenta fraudulenta.</p>
+                    <p class="text-red-600"><strong>Lección:</strong> Protocolos de verificación para solicitudes financieras, sin excepciones.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛡️ Técnicas de Defensa Psicológica</h3>
+                <div class="space-y-4">
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">Técnica STOP-THINK-VERIFY</h4>
+                    <ul class="text-green-700 text-sm space-y-1">
+                      <li><strong>STOP:</strong> Pausa ante cualquier solicitud inusual o urgente</li>
+                      <li><strong>THINK:</strong> Analiza si la solicitud es consistente con protocolos normales</li>
+                      <li><strong>VERIFY:</strong> Confirma identidad y autorización por canal independiente</li>
+                    </ul>
+                  </div>
+
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-2">Preguntas de Verificación</h4>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                      <li>• "¿Puede proporcionarme su número de empleado para verificar?"</li>
+                      <li>• "¿Por qué canal normalmente recibo este tipo de solicitudes?"</li>
+                      <li>• "¿Quién más en mi equipo puede confirmar esta información?"</li>
+                      <li>• "¿Puedo llamarlo de vuelta al número registrado oficialmente?"</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🚨 Señales de Alerta</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-3">
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Presión temporal extrema ("debe ser ahora")</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Solicitudes por canales inusuales</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Amenazas de consecuencias ("su empleo está en riesgo")</span>
+                    </div>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Solicitar mantener secreto la conversación</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Ofrecimiento de beneficios personales</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                      <span class="text-red-500 text-lg">🔴</span>
+                      <span class="text-sm text-gray-700">Evitar protocolos de verificación estándar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">🎓 Autoevaluación</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-blue-800 mb-2">Escenario: Recibe llamada urgente de "TI corporativo" solicitando su contraseña para "actualización de seguridad". ¿Qué hace?</p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="scenario1" value="wrong" class="text-blue-600">
+                        <span>Proporciona la contraseña inmediatamente</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="scenario1" value="correct" class="text-blue-600">
+                        <span>Verifica identidad llamando al número oficial de TI</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="scenario1" value="wrong" class="text-blue-600">
+                        <span>Cuelga sin verificar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+45 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getPretextingFinancialContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Pretexting en el Sector Financiero</h2>
+                <p class="text-blue-600 font-medium">🏆 50 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎭 ¿Qué es el Pretexting?</h3>
+                <p class="text-gray-700 mb-4">
+                  El pretexting es una técnica de ingeniería social donde el atacante crea un escenario fabricado (pretexto) 
+                  para obtener información confidencial. En el sector financiero, los atacantes desarrollan identidades falsas 
+                  convincentes y situaciones creíbles para engañar a empleados y clientes.
+                </p>
+                <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                  <p class="text-yellow-800 text-sm">
+                    <strong>Diferencia clave:</strong> Mientras el phishing es principalmente digital, el pretexting puede 
+                    incluir interacciones telefónicas, presenciales y digitales con narrativas elaboradas.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎯 Objetivos Comunes en Entidades Financieras</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-4">
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                      <h4 class="font-semibold text-red-800 mb-2">Información de Clientes</h4>
+                      <ul class="text-red-700 text-sm space-y-1">
+                        <li>• Números de cuenta</li>
+                        <li>• Datos personales</li>
+                        <li>• Historial crediticio</li>
+                        <li>• Transacciones recientes</li>
+                      </ul>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                      <h4 class="font-semibold text-orange-800 mb-2">Credenciales de Empleados</h4>
+                      <ul class="text-orange-700 text-sm space-y-1">
+                        <li>• Usuarios y contraseñas</li>
+                        <li>• Códigos de autorización</li>
+                        <li>• Tokens de acceso</li>
+                        <li>• Información de sistemas internos</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">Procesos Internos</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• Procedimientos de verificación</li>
+                        <li>• Horarios de operación</li>
+                        <li>• Estructura organizacional</li>
+                        <li>• Sistemas de seguridad</li>
+                      </ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">Acceso Físico</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• Códigos de acceso</li>
+                        <li>• Horarios de personal</li>
+                        <li>• Ubicación de equipos críticos</li>
+                        <li>• Procedimientos de seguridad física</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎪 Identidades Falsas Comunes</h3>
+                <div class="space-y-4">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">👨‍💼 Regulador Financiero</h4>
+                    <p class="text-gray-700 text-sm mb-2">Se hacen pasar por funcionarios de la Superintendencia Financiera, ASOBANCARIA, o entidades regulatorias internacionales.</p>
+                    <div class="text-xs text-gray-600">
+                      <strong>Narrativa típica:</strong> "Inspección sorpresa de cumplimiento", "Verificación de reportes regulatorios", "Auditoría de seguridad cibernética"
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">🔧 Proveedor de TI</h4>
+                    <p class="text-gray-700 text-sm mb-2">Fingen ser técnicos de empresas proveedoras de software bancario, telecomunicaciones o seguridad.</p>
+                    <div class="text-xs text-gray-600">
+                      <strong>Narrativa típica:</strong> "Actualización crítica de seguridad", "Mantenimiento programado", "Resolución de incidente reportado"
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">🏢 Empleado de Otra Sucursal</h4>
+                    <p class="text-gray-700 text-sm mb-2">Se presentan como empleados de otra sucursal o departamento que necesitan información específica.</p>
+                    <div class="text-xs text-gray-600">
+                      <strong>Narrativa típica:</strong> "Problema con el sistema", "Cliente importante esperando", "Gerencia necesita información urgente"
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">📞 Cliente en Distress</h4>
+                    <p class="text-gray-700 text-sm mb-2">Actúan como clientes con emergencias que requieren bypass de procedimientos normales.</p>
+                    <div class="text-xs text-gray-600">
+                      <strong>Narrativa típica:</strong> "Emergencia médica", "Viaje urgente", "Problema familiar", "Tarjeta bloqueada en el extranjero"
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📞 Técnicas de Pretexting Telefónico</h3>
+                <div class="space-y-6">
+                  <div class="bg-red-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-3">Fase 1: Preparación e Investigación</h4>
+                    <ul class="text-red-700 text-sm space-y-2">
+                      <li><strong>Recolección de información:</strong> Nombres de empleados, estructura organizacional, terminología específica</li>
+                      <li><strong>Timing estratégico:</strong> Llamadas durante cambios de turno, horas pico, o eventos especiales</li>
+                      <li><strong>Conocimiento técnico:</strong> Uso de jerga financiera y procesos conocidos para generar credibilidad</li>
+                    </ul>
+                  </div>
+
+                  <div class="bg-orange-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-orange-800 mb-3">Fase 2: Establecimiento de Credibilidad</h4>
+                    <ul class="text-orange-700 text-sm space-y-2">
+                      <li><strong>Información previa:</strong> Demuestran conocimiento de sistemas, personas, o eventos recientes</li>
+                      <li><strong>Referencias cruzadas:</strong> Mencionan nombres de empleados reales o situaciones conocidas</li>
+                      <li><strong>Detalles técnicos:</strong> Usan terminología específica del sector financiero</li>
+                    </ul>
+                  </div>
+
+                  <div class="bg-yellow-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-yellow-800 mb-3">Fase 3: Creación de Urgencia</h4>
+                    <ul class="text-yellow-700 text-sm space-y-2">
+                      <li><strong>Presión temporal:</strong> "El cliente está esperando", "El sistema se cierra en 10 minutos"</li>
+                      <li><strong>Consecuencias graves:</strong> "Multa regulatoria", "Pérdida de cliente importante"</li>
+                      <li><strong>Autoridad superior:</strong> "El gerente general necesita esto inmediatamente"</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Caso de Estudio: "El Auditor de Emergencia"</h3>
+                <div class="bg-gray-100 p-6 rounded-lg">
+                  <div class="space-y-4 text-sm">
+                    <div>
+                      <h4 class="font-semibold text-gray-800 mb-2">Situación Inicial</h4>
+                      <p class="text-gray-700">
+                        Un atacante llama a la recepción de un banco haciéndose pasar por un auditor de la Superintendencia Financiera. 
+                        Afirma que están realizando una inspección sorpresa debido a una denuncia anónima sobre irregularidades.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 class="font-semibold text-gray-800 mb-2">Técnicas Utilizadas</h4>
+                      <ul class="text-gray-700 space-y-1">
+                        <li>• <strong>Autoridad fabricada:</strong> Se presenta con número de identificación falso de la SFC</li>
+                        <li>• <strong>Conocimiento previo:</strong> Menciona el nombre del gerente y eventos recientes públicos</li>
+                        <li>• <strong>Urgencia creada:</strong> "Debo completar el reporte antes del cierre del día"</li>
+                        <li>• <strong>Intimidación sutil:</strong> Menciona posibles sanciones si no hay cooperación</li>
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h4 class="font-semibold text-gray-800 mb-2">Escalación del Ataque</h4>
+                      <p class="text-gray-700">
+                        Solicita ser transferido a diferentes departamentos "para verificar cumplimiento". En cada transferencia, 
+                        recopila nombres, estructura organizacional, y finalmente solicita acceso a sistemas "para verificar logs de seguridad".
+                      </p>
+                    </div>
+
+                    <div class="bg-red-50 p-4 rounded-lg">
+                      <h4 class="font-semibold text-red-800 mb-2">Resultado</h4>
+                      <p class="text-red-700">
+                        Obtuvo información detallada de la estructura organizacional, nombres de empleados, sistemas utilizados, 
+                        y credenciales de acceso temporal de un empleado junior intimidado.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛡️ Protocolos de Defensa</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">Verificación de Identidad</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• Solicitar número de identificación oficial</li>
+                        <li>• Llamar de vuelta al número registrado</li>
+                        <li>• Verificar con supervisor inmediato</li>
+                        <li>• Confirmar con el departamento mencionado</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">Protocolo de Escalación</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• Involucrar inmediatamente al supervisor</li>
+                        <li>• Documentar todos los detalles de la solicitud</li>
+                        <li>• No proporcionar información sin autorización</li>
+                        <li>• Reportar inmediatamente a seguridad</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">Preguntas de Verificación</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• "¿Puede enviar la solicitud por escrito?"</li>
+                        <li>• "¿Cuál es el proceso normal para esto?"</li>
+                        <li>• "¿Quién autorizó esta solicitud?"</li>
+                        <li>• "¿Puede esperar mientras verifico?"</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                      <h4 class="font-semibold text-orange-800 mb-2">Señales de Alerta</h4>
+                      <ul class="text-orange-700 text-sm space-y-1">
+                        <li>• Resistencia a seguir protocolos</li>
+                        <li>• Presión temporal extrema</li>
+                        <li>• Solicitudes inusuales de información</li>
+                        <li>• Evitar canales de comunicación oficiales</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">🎯 Ejercicio Práctico</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-blue-800 mb-2">
+                      Escenario: Recibe llamada de alguien que dice ser del departamento de auditoría interna, 
+                      solicitando verificar las transacciones de los últimos 3 días de un cliente específico. 
+                      Dice que es para una investigación confidencial ordenada por gerencia.
+                    </p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="exercise1" value="wrong" class="text-blue-600">
+                        <span>Proporciono la información inmediatamente</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="exercise1" value="wrong" class="text-blue-600">
+                        <span>Pido que me envíe un email con la solicitud</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="exercise1" value="correct" class="text-blue-600">
+                        <span>Verifico identidad, escalo a supervisor y sigo protocolos establecidos</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="exercise1" value="wrong" class="text-blue-600">
+                        <span>Cuelgo inmediatamente</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+50 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getSecurePasswordsContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Creación de Contraseñas Seguras</h2>
+                <p class="text-blue-600 font-medium">🏆 35 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔐 La Importancia de las Contraseñas en el Sector Financiero</h3>
+                <p class="text-gray-700 mb-4">
+                  En instituciones financieras, las contraseñas son la primera línea de defensa contra ciberataques. 
+                  El 81% de las brechas de datos están relacionadas con contraseñas débiles o comprometidas. 
+                  Una contraseña robusta puede ser la diferencia entre proteger millones de pesos en activos financieros o sufrir una brecha de seguridad.
+                </p>
+                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                  <p class="text-red-800 text-sm">
+                    <strong>Estadística alarmante:</strong> En Colombia, el 67% de los ataques exitosos a entidades financieras 
+                    iniciaron con credenciales comprometidas.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📏 Criterios para Contraseñas Robustas</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">✅ Características Obligatorias</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• <strong>Mínimo 12 caracteres</strong> (recomendado 16+)</li>
+                        <li>• <strong>Letras mayúsculas</strong> (A-Z)</li>
+                        <li>• <strong>Letras minúsculas</strong> (a-z)</li>
+                        <li>• <strong>Números</strong> (0-9)</li>
+                        <li>• <strong>Símbolos especiales</strong> (!@#$%^&*)</li>
+                        <li>• <strong>Sin patrones predecibles</strong></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                      <h4 class="font-semibold text-red-800 mb-2">❌ Elementos Prohibidos</h4>
+                      <ul class="text-red-700 text-sm space-y-1">
+                        <li>• Información personal (nombres, fechas)</li>
+                        <li>• Palabras del diccionario</li>
+                        <li>• Secuencias (123456, abcdef)</li>
+                        <li>• Repeticiones (aaaaaa)</li>
+                        <li>• Datos de la empresa</li>
+                        <li>• Contraseñas anteriores similares</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔧 Métodos de Creación Efectivos</h3>
+                
+                <div class="space-y-6">
+                  <div class="bg-blue-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-3">1. Método de la Frase Memorable (Passphrase)</h4>
+                    <div class="text-sm text-blue-700 space-y-2">
+                      <p><strong>Ejemplo:</strong> "Me gusta trabajar en el Banco Nacional desde 2018!"</p>
+                      <p><strong>Transformación:</strong> "MgT3nB@nk&D2018!"</p>
+                      <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>Toma primeras letras de cada palabra</li>
+                        <li>Sustituye letras por números/símbolos similares</li>
+                        <li>Agrega números significativos</li>
+                        <li>Incluye símbolos especiales</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-purple-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-purple-800 mb-3">2. Método de Sustitución Avanzada</h4>
+                    <div class="text-sm text-purple-700 space-y-2">
+                      <p><strong>Base:</strong> "BancoSeguro2024"</p>
+                      <p><strong>Sustituciones:</strong></p>
+                      <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>a → @, o → 0, e → 3, s → $</li>
+                        <li><strong>Resultado:</strong> "B@nc0$3gur02024"</li>
+                        <li>Agregar símbolos: "B@nc0$3gur0#2024!"</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-green-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-3">3. Método del Algoritmo Personal</h4>
+                    <div class="text-sm text-green-700 space-y-2">
+                      <p><strong>Fórmula:</strong> [Servicio] + [Patrón personal] + [Fecha]</p>
+                      <p><strong>Para Gmail:</strong> "Gmail" + "Mx7&" + "24" = "GmailMx7&24"</p>
+                      <p><strong>Para Sistema Bancario:</strong> "SysBnc" + "Mx7&" + "24" = "SysBncMx7&24"</p>
+                      <p class="text-green-600 font-medium">Así cada sistema tiene una contraseña única pero fácil de recordar</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛡️ Gestores de Contraseñas Recomendados</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">🏢 Para Uso Corporativo</h4>
+                    <ul class="text-gray-700 text-sm space-y-1">
+                      <li>• <strong>Bitwarden Business:</strong> Cifrado AES-256, auditorías</li>
+                      <li>• <strong>1Password Business:</strong> Integración enterprise</li>
+                      <li>• <strong>Keeper Business:</strong> Cumplimiento SOC-2</li>
+                      <li>• <strong>LastPass Enterprise:</strong> SSO integrado</li>
+                    </ul>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-2">👤 Para Uso Personal</h4>
+                    <ul class="text-gray-700 text-sm space-y-1">
+                      <li>• <strong>Bitwarden:</strong> Gratuito y open source</li>
+                      <li>• <strong>1Password:</strong> Interfaz intuitiva</li>
+                      <li>• <strong>Keeper:</strong> Auditorías de seguridad</li>
+                      <li>• <strong>Dashlane:</strong> VPN incluido</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Casos Reales de Compromiso</h3>
+                
+                <div class="space-y-4">
+                  <div class="bg-red-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-3">Caso 1: Ataque de Diccionario - Banco Regional 2023</h4>
+                    <div class="text-sm text-red-700 space-y-2">
+                      <p><strong>Problema:</strong> Empleados usaban contraseñas como "banco123", "seguridad1"</p>
+                      <p><strong>Resultado:</strong> 15,000 cuentas comprometidas en 3 horas</p>
+                      <p><strong>Lección:</strong> Las contraseñas predecibles son vulnerables a ataques automatizados</p>
+                    </div>
+                  </div>
+
+                  <div class="bg-orange-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-orange-800 mb-3">Caso 2: Reutilización de Contraseñas - Fintech 2024</h4>
+                    <div class="text-sm text-orange-700 space-y-2">
+                      <p><strong>Problema:</strong> Mismo password para email corporativo y sistemas críticos</p>
+                      <p><strong>Resultado:</strong> Acceso total a sistemas tras phishing exitoso</p>
+                      <p><strong>Lección:</strong> Cada sistema debe tener contraseña única</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔄 Políticas de Cambio y Mantenimiento</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 class="font-semibold text-blue-800 mb-2">Frecuencia de Cambio</h4>
+                    <ul class="text-blue-700 text-sm space-y-1">
+                      <li>• <strong>Sistemas críticos:</strong> Cada 90 días</li>
+                      <li>• <strong>Aplicaciones financieras:</strong> Cada 60 días</li>
+                      <li>• <strong>Acceso administrativo:</strong> Cada 30 días</li>
+                      <li>• <strong>Tras incidente:</strong> Inmediatamente</li>
+                    </ul>
+                  </div>
+                  <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h4 class="font-semibold text-yellow-800 mb-2">Señales de Compromiso</h4>
+                    <ul class="text-yellow-700 text-sm space-y-1">
+                      <li>• Intentos de acceso desde ubicaciones extrañas</li>
+                      <li>• Actividad inusual en la cuenta</li>
+                      <li>• Alertas de seguridad del sistema</li>
+                      <li>• Reportes de phishing recibidos</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-green-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-green-800 mb-4">🎯 Ejercicio Práctico</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-green-800 mb-2">
+                      Evalúa la fortaleza de esta contraseña para un sistema bancario: "Banco2024!"
+                    </p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="password-eval" value="wrong" class="text-green-600">
+                        <span>Excelente - Cumple todos los criterios</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="password-eval" value="correct" class="text-green-600">
+                        <span>Débil - Predecible, palabra de diccionario, información obvia</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="password-eval" value="wrong" class="text-green-600">
+                        <span>Buena - Solo necesita más caracteres</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-green-100 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-2">💡 Mejora Sugerida:</h4>
+                    <p class="text-green-700 text-sm">
+                      Contraseña mejorada: "Tr@b4j0B&nc0#2024!" - Usa sustituciones, elimina palabras obvias, 
+                      mantiene la memorabilidad pero aumenta significativamente la seguridad.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+35 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getTwoFactorAuthContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Autenticación de Dos Factores</h2>
+                <p class="text-blue-600 font-medium">🏆 40 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛡️ ¿Qué es la Autenticación de Dos Factores (2FA)?</h3>
+                <p class="text-gray-700 mb-4">
+                  La autenticación de dos factores (2FA) es un método de seguridad que requiere dos formas diferentes 
+                  de verificación antes de otorgar acceso a un sistema. En el sector financiero, es considerada 
+                  <strong>obligatoria</strong> por la Superintendencia Financiera para sistemas críticos.
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                  <p class="text-blue-800 text-sm">
+                    <strong>Estadística:</strong> La implementación de 2FA reduce en un 99.9% los riesgos de 
+                    acceso no autorizado, incluso con credenciales comprometidas.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🔑 Los Tres Factores de Autenticación</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 class="font-semibold text-green-800 mb-2">1. Algo que SABES</h4>
+                    <p class="text-green-700 text-sm mb-2">Factor de Conocimiento</p>
+                    <ul class="text-green-700 text-xs space-y-1">
+                      <li>• Contraseñas</li>
+                      <li>• PINs</li>
+                      <li>• Preguntas de seguridad</li>
+                      <li>• Patrones de desbloqueo</li>
+                    </ul>
+                  </div>
+                  <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 class="font-semibold text-blue-800 mb-2">2. Algo que TIENES</h4>
+                    <p class="text-blue-700 text-sm mb-2">Factor de Posesión</p>
+                    <ul class="text-blue-700 text-xs space-y-1">
+                      <li>• Teléfono móvil</li>
+                      <li>• Tokens físicos</li>
+                      <li>• Tarjetas inteligentes</li>
+                      <li>• Apps autenticadoras</li>
+                    </ul>
+                  </div>
+                  <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                    <h4 class="font-semibold text-purple-800 mb-2">3. Algo que ERES</h4>
+                    <p class="text-purple-700 text-sm mb-2">Factor Biométrico</p>
+                    <ul class="text-purple-700 text-xs space-y-1">
+                      <li>• Huella dactilar</li>
+                      <li>• Reconocimiento facial</li>
+                      <li>• Escaneo de iris</li>
+                      <li>• Reconocimiento de voz</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📱 Métodos de 2FA Comunes en Entidades Financieras</h3>
+                
+                <div class="space-y-6">
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">1. SMS/Código por Texto</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Ventajas:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Fácil implementación</li>
+                          <li>• No requiere apps adicionales</li>
+                          <li>• Amplia adopción por usuarios</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Desventajas:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Vulnerable a SIM swapping</li>
+                          <li>• Requiere señal celular</li>
+                          <li>• Posible intercepción</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">2. Apps Autenticadoras (TOTP)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Aplicaciones recomendadas:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• <strong>Google Authenticator:</strong> Simple y confiable</li>
+                          <li>• <strong>Microsoft Authenticator:</strong> Integración empresarial</li>
+                          <li>• <strong>Authy:</strong> Backup en la nube</li>
+                          <li>• <strong>1Password:</strong> Integrado con gestor</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Beneficios:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Funciona sin internet</li>
+                          <li>• Códigos únicos cada 30 segundos</li>
+                          <li>• Resistente a phishing</li>
+                          <li>• No depende de SMS</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">3. Tokens Físicos (Hardware)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Tipos comunes:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• <strong>YubiKey:</strong> Estándar FIDO2/WebAuthn</li>
+                          <li>• <strong>RSA SecurID:</strong> Tokens corporativos</li>
+                          <li>• <strong>Google Titan:</strong> Hardware security keys</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-700 mb-2"><strong>Ventajas únicas:</strong></p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Máximo nivel de seguridad</li>
+                          <li>• Resistente a phishing avanzado</li>
+                          <li>• No depende de dispositivos móviles</li>
+                          <li>• Cumplimiento regulatorio superior</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚖️ Regulaciones en Colombia</h3>
+                <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                  <h4 class="font-semibold text-yellow-800 mb-3">Superintendencia Financiera - Circular Externa 007 de 2018</h4>
+                  <div class="text-sm text-yellow-700 space-y-2">
+                    <p><strong>Artículo 4.3.1:</strong> "Las entidades vigiladas deberán implementar mecanismos de autenticación multifactor para:"</p>
+                    <ul class="space-y-1 ml-4">
+                      <li>• Acceso a sistemas de información críticos</li>
+                      <li>• Transacciones de alto valor (superior a 10 SMLMV)</li>
+                      <li>• Acceso administrativo a infraestructura</li>
+                      <li>• Operaciones desde ubicaciones no habituales</li>
+                    </ul>
+                    <p class="mt-3"><strong>Cumplimiento obligatorio:</strong> Todas las entidades financieras desde enero 2019</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🚨 Ataques Comunes contra 2FA</h3>
+                
+                <div class="space-y-4">
+                  <div class="bg-red-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-3">1. SIM Swapping</h4>
+                    <div class="text-sm text-red-700 space-y-2">
+                      <p><strong>Método:</strong> Atacante convence a operador móvil de transferir número a SIM controlada</p>
+                      <p><strong>Objetivo:</strong> Interceptar códigos SMS de 2FA</p>
+                      <p><strong>Prevención:</strong> Usar apps autenticadoras en lugar de SMS cuando sea posible</p>
+                    </div>
+                  </div>
+
+                  <div class="bg-orange-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-orange-800 mb-3">2. Phishing de Códigos 2FA</h4>
+                    <div class="text-sm text-orange-700 space-y-2">
+                      <p><strong>Método:</strong> Sitio falso solicita usuario, contraseña Y código 2FA en tiempo real</p>
+                      <p><strong>Objetivo:</strong> Usar credenciales completas inmediatamente</p>
+                      <p><strong>Prevención:</strong> Verificar siempre la URL antes de ingresar códigos</p>
+                    </div>
+                  </div>
+
+                  <div class="bg-purple-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-purple-800 mb-3">3. Ingeniería Social para Códigos</h4>
+                    <div class="text-sm text-purple-700 space-y-2">
+                      <p><strong>Método:</strong> Llamada telefónica fingiendo ser soporte técnico pidiendo código "para verificar"</p>
+                      <p><strong>Objetivo:</strong> Obtener código activo para acceso inmediato</p>
+                      <p><strong>Prevención:</strong> NUNCA compartir códigos 2FA por teléfono o email</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">✅ Mejores Prácticas de Implementación</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">Para Empleados</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• Usar apps autenticadoras sobre SMS</li>
+                        <li>• Mantener códigos de backup seguros</li>
+                        <li>• No compartir códigos nunca</li>
+                        <li>• Reportar inmediatamente si pierde dispositivo 2FA</li>
+                      </ul>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">Para TI/Administradores</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• Implementar múltiples métodos 2FA</li>
+                        <li>• Monitorear intentos de bypass</li>
+                        <li>• Entrenar usuarios regularmente</li>
+                        <li>• Mantener procedimientos de recuperación</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">Para la Organización</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• Política 2FA clara y obligatoria</li>
+                        <li>• Soporte técnico especializado</li>
+                        <li>• Auditorías regulares de cumplimiento</li>
+                        <li>• Plan de contingencia para fallos</li>
+                      </ul>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                      <h4 class="font-semibold text-orange-800 mb-2">Monitoreo Continuo</h4>
+                      <ul class="text-orange-700 text-sm space-y-1">
+                        <li>• Alertas por intentos fallidos repetidos</li>
+                        <li>• Geolocalización de accesos</li>
+                        <li>• Análisis de patrones inusuales</li>
+                        <li>• Reportes de adopción y efectividad</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">🎯 Caso Práctico</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-blue-800 mb-2">
+                      Recibes una llamada de alguien que dice ser del departamento de TI, pidiendo tu código 
+                      de autenticación "para actualizar el sistema de seguridad". ¿Cuál es la respuesta correcta?
+                    </p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="2fa-scenario" value="wrong" class="text-blue-600">
+                        <span>Proporciono el código inmediatamente</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="2fa-scenario" value="wrong" class="text-blue-600">
+                        <span>Pido que me envíe un email con la solicitud</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="2fa-scenario" value="correct" class="text-blue-600">
+                        <span>Rechazo dar el código y reporto el incidente a seguridad</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="2fa-scenario" value="wrong" class="text-blue-600">
+                        <span>Cuelgo y vuelvo a llamar al número que me dio</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-blue-100 p-4 rounded-lg">
+                    <p class="text-blue-800 text-sm">
+                      <strong>Regla de oro:</strong> Los códigos 2FA NUNCA deben compartirse por teléfono, email, 
+                      o cualquier canal de comunicación. Son para uso exclusivo del titular de la cuenta.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+40 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getSuperintendenciaGuidelinesContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Directrices de la Superintendencia</h2>
+                <p class="text-blue-600 font-medium">🏆 50 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚖️ Marco Normativo de Ciberseguridad en Colombia</h3>
+                <p class="text-gray-700 mb-4">
+                  La Superintendencia Financiera de Colombia (SFC) ha establecido un robusto marco regulatorio para la 
+                  ciberseguridad en el sector financiero, con el objetivo de proteger la estabilidad del sistema 
+                  financiero y la información de los usuarios.
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                  <p class="text-blue-800 text-sm">
+                    <strong>Fundamento legal:</strong> La SFC basa sus regulaciones en la Ley 1266 de 2008 (Habeas Data), 
+                    Ley 1581 de 2012 (Protección de Datos), y el Decreto 1074 de 2015.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Principales Circulares y Normativas</h3>
+                
+                <div class="space-y-6">
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Circular Externa 007 de 2018</h4>
+                    <p class="text-sm text-gray-700 mb-3"><strong>Tema:</strong> Instrucciones sobre Seguridad de la Información</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Capítulo I - Gobierno de Seguridad</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Designación de CISO (Chief Information Security Officer)</li>
+                          <li>• Comité de seguridad de la información</li>
+                          <li>• Políticas y procedimientos documentados</li>
+                          <li>• Revisión anual de políticas</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Capítulo II - Gestión de Riesgos</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Metodología de evaluación de riesgos</li>
+                          <li>• Inventario de activos de información</li>
+                          <li>• Clasificación de información</li>
+                          <li>• Planes de tratamiento de riesgos</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Circular Externa 013 de 2022</h4>
+                    <p class="text-sm text-gray-700 mb-3"><strong>Tema:</strong> Lineamientos sobre Gestión de Ciberseguridad</p>
+                    <div class="space-y-3">
+                      <div class="bg-red-50 p-3 rounded border-l-4 border-red-400">
+                        <h5 class="font-medium text-red-800 mb-1">Artículo 2.1 - Reporte de Incidentes</h5>
+                        <p class="text-sm text-red-700">Las entidades deben reportar incidentes de ciberseguridad a la SFC dentro de las <strong>24 horas</strong> siguientes a su detección.</p>
+                      </div>
+                      <div class="bg-orange-50 p-3 rounded border-l-4 border-orange-400">
+                        <h5 class="font-medium text-orange-800 mb-1">Artículo 3.2 - Controles de Acceso</h5>
+                        <p class="text-sm text-orange-700">Implementación obligatoria de autenticación multifactor para sistemas críticos y privilegiados.</p>
+                      </div>
+                      <div class="bg-green-50 p-3 rounded border-l-4 border-green-400">
+                        <h5 class="font-medium text-green-800 mb-1">Artículo 4.1 - Monitoreo Continuo</h5>
+                        <p class="text-sm text-green-700">Capacidades de monitoreo 24/7 con correlación de eventos y análisis de comportamiento.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Circular Externa 029 de 2021</h4>
+                    <p class="text-sm text-gray-700 mb-3"><strong>Tema:</strong> Protección de Datos Personales</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Principios de Tratamiento</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Finalidad legítima del tratamiento</li>
+                          <li>• Consentimiento informado del titular</li>
+                          <li>• Minimización de datos</li>
+                          <li>• Exactitud y actualización</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Medidas de Seguridad</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Cifrado de datos sensibles</li>
+                          <li>• Controles de acceso granulares</li>
+                          <li>• Auditorías de acceso</li>
+                          <li>• Pseudonimización cuando aplique</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛡️ Controles de Seguridad Obligatorios</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">Controles Técnicos</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• <strong>Firewall perimetral</strong> con reglas documentadas</li>
+                        <li>• <strong>Antimalware</strong> actualizado en todos los endpoints</li>
+                        <li>• <strong>IDS/IPS</strong> para detección de intrusiones</li>
+                        <li>• <strong>DLP</strong> para prevención de pérdida de datos</li>
+                        <li>• <strong>SIEM</strong> para correlación de eventos</li>
+                        <li>• <strong>Backup cifrado</strong> con pruebas de restauración</li>
+                      </ul>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">Controles Organizacionales</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• <strong>Política de seguridad</strong> aprobada por Junta Directiva</li>
+                        <li>• <strong>Procedimientos</strong> documentados y actualizados</li>
+                        <li>• <strong>Plan de continuidad</strong> probado anualmente</li>
+                        <li>• <strong>Capacitación</strong> obligatoria para empleados</li>
+                        <li>• <strong>Gestión de terceros</strong> con cláusulas de seguridad</li>
+                        <li>• <strong>Auditorías internas</strong> al menos anuales</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">Controles de Acceso</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• <strong>Principio de menor privilegio</strong> aplicado</li>
+                        <li>• <strong>Segregación de funciones</strong> en procesos críticos</li>
+                        <li>• <strong>Revisión periódica</strong> de permisos (trimestral)</li>
+                        <li>• <strong>Gestión de identidades</strong> centralizada</li>
+                        <li>• <strong>Cuentas privilegiadas</strong> monitoreadas</li>
+                        <li>• <strong>Autenticación fuerte</strong> para sistemas críticos</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                      <h4 class="font-semibold text-orange-800 mb-2">Controles de Monitoreo</h4>
+                      <ul class="text-orange-700 text-sm space-y-1">
+                        <li>• <strong>SOC 24/7</strong> o servicio equivalente</li>
+                        <li>• <strong>Logs centralizados</strong> con retención mínima 1 año</li>
+                        <li>• <strong>Alertas automáticas</strong> para eventos críticos</li>
+                        <li>• <strong>Análisis de tráfico</strong> de red</li>
+                        <li>• <strong>Monitoreo de integridad</strong> de archivos</li>
+                        <li>• <strong>Indicadores de compromiso</strong> actualizados</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📊 Reportes y Compliance</h3>
+                
+                <div class="space-y-4">
+                  <div class="bg-yellow-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-yellow-800 mb-3">Reporte Anual de Gestión de Riesgos (RAGR)</h4>
+                    <div class="text-sm text-yellow-700 space-y-2">
+                      <p><strong>Fecha de entrega:</strong> 31 de marzo de cada año</p>
+                      <p><strong>Contenido obligatorio:</strong></p>
+                      <ul class="ml-4 space-y-1">
+                        <li>• Inventario actualizado de activos de información</li>
+                        <li>• Matriz de riesgos con calificación y tratamiento</li>
+                        <li>• Resultados de pruebas de penetración</li>
+                        <li>• Plan de capacitación ejecutado</li>
+                        <li>• Incidentes reportados y lecciones aprendidas</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-red-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-3">Reporte de Incidentes de Ciberseguridad</h4>
+                    <div class="text-sm text-red-700 space-y-2">
+                      <p><strong>Plazo:</strong> Máximo 24 horas desde la detección</p>
+                      <p><strong>Criterios de reporte obligatorio:</strong></p>
+                      <ul class="ml-4 space-y-1">
+                        <li>• Acceso no autorizado a sistemas críticos</li>
+                        <li>• Fuga de información confidencial</li>
+                        <li>• Interrupción de servicios > 4 horas</li>
+                        <li>• Malware en sistemas de producción</li>
+                        <li>• Cualquier evento que afecte la continuidad del negocio</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-blue-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-3">Evaluaciones y Auditorías</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-blue-800 mb-2">Evaluaciones Internas</h5>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                          <li>• <strong>Auditoría anual</strong> de controles</li>
+                          <li>• <strong>Pruebas de penetración</strong> semestrales</li>
+                          <li>• <strong>Evaluación de vulnerabilidades</strong> mensual</li>
+                          <li>• <strong>Simulacros de incidentes</strong> trimestrales</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-blue-800 mb-2">Evaluaciones SFC</h5>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                          <li>• <strong>Visitas de inspección</strong> programadas</li>
+                          <li>• <strong>Requerimientos de información</strong> ad-hoc</li>
+                          <li>• <strong>Evaluación de cumplimiento</strong> normativo</li>
+                          <li>• <strong>Sanciones</strong> por incumplimiento</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Sanciones por Incumplimiento</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                    <h4 class="font-semibold text-red-800 mb-2">Sanciones Administrativas</h4>
+                    <ul class="text-red-700 text-sm space-y-1">
+                      <li>• <strong>Multas:</strong> Hasta 2,000 SMLMV</li>
+                      <li>• <strong>Amonestación</strong> escrita</li>
+                      <li>• <strong>Suspensión</strong> de operaciones específicas</li>
+                      <li>• <strong>Revocatoria</strong> de autorización (casos extremos)</li>
+                    </ul>
+                  </div>
+                  <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                    <h4 class="font-semibold text-orange-800 mb-2">Factores Agravantes</h4>
+                    <ul class="text-orange-700 text-sm space-y-1">
+                      <li>• Reincidencia en incumplimientos</li>
+                      <li>• Ocultamiento de información</li>
+                      <li>• Impacto en usuarios financieros</li>
+                      <li>• Resistencia a implementar correctivos</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📈 Tendencias y Actualizaciones 2024-2025</h3>
+                
+                <div class="space-y-4">
+                  <div class="bg-green-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-3">Nuevas Directrices en Desarrollo</h4>
+                    <ul class="text-green-700 text-sm space-y-2">
+                      <li>• <strong>IA y Machine Learning:</strong> Lineamientos para uso responsable de IA en servicios financieros</li>
+                      <li>• <strong>Cloud Security:</strong> Estándares para migración y operación en la nube</li>
+                      <li>• <strong>Open Banking:</strong> Requisitos de seguridad para APIs financieras</li>
+                      <li>• <strong>Quantum-Safe Cryptography:</strong> Preparación para amenazas cuánticas</li>
+                    </ul>
+                  </div>
+
+                  <div class="bg-blue-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-blue-800 mb-3">Alineación con Estándares Internacionales</h4>
+                    <ul class="text-blue-700 text-sm space-y-2">
+                      <li>• <strong>ISO 27001:2022:</strong> Adopción de la nueva versión del estándar</li>
+                      <li>• <strong>NIST Cybersecurity Framework 2.0:</strong> Incorporación de mejores prácticas</li>
+                      <li>• <strong>SWIFT CSP:</strong> Alineación con controles para mensajería financiera</li>
+                      <li>• <strong>PCI DSS 4.0:</strong> Cumplimiento para procesamiento de tarjetas</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">🎯 Caso Práctico de Cumplimiento</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-blue-800 mb-2">
+                      Su entidad financiera detecta un intento de acceso no autorizado a su core bancario a las 2:00 AM. 
+                      El atacante no logró acceder, pero el evento quedó registrado. Según las normativas SFC, ¿qué debe hacer?
+                    </p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="compliance-scenario" value="wrong" class="text-blue-600">
+                        <span>Reportar solo si hay evidencia de daño</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="compliance-scenario" value="correct" class="text-blue-600">
+                        <span>Reportar a SFC dentro de 24 horas y documentar todas las acciones</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="compliance-scenario" value="wrong" class="text-blue-600">
+                        <span>Esperar al reporte anual para incluirlo</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="compliance-scenario" value="wrong" class="text-blue-600">
+                        <span>Solo monitorear por posibles intentos futuros</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-blue-100 p-4 rounded-lg">
+                    <p class="text-blue-800 text-sm">
+                      <strong>Justificación:</strong> Cualquier intento de acceso no autorizado a sistemas críticos 
+                      debe reportarse dentro de las 24 horas siguientes, independientemente de si fue exitoso o no, 
+                      según la Circular Externa 013 de 2022.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+50 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getIncidentReportingContent() {
+        return `
+          <div class="p-8 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">Reporte de Incidentes de Seguridad</h2>
+                <p class="text-blue-600 font-medium">🏆 45 puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+
+            <div class="prose max-w-none">
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🚨 ¿Qué es un Incidente de Seguridad?</h3>
+                <p class="text-gray-700 mb-4">
+                  Un incidente de seguridad es cualquier evento que compromete o amenaza la confidencialidad, 
+                  integridad o disponibilidad de la información o los sistemas de una entidad financiera. 
+                  La detección temprana y respuesta efectiva pueden minimizar el impacto y cumplir con las 
+                  obligaciones regulatorias.
+                </p>
+                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                  <p class="text-red-800 text-sm">
+                    <strong>Dato crítico:</strong> En promedio, las entidades financieras tardan 280 días en 
+                    detectar una brecha de seguridad. Un reporte temprano y efectivo puede reducir el impacto 
+                    financiero en hasta un 80%.
+                  </p>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🎯 Tipos de Incidentes Comunes</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-4">
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                      <h4 class="font-semibold text-red-800 mb-2">🔓 Acceso No Autorizado</h4>
+                      <ul class="text-red-700 text-sm space-y-1">
+                        <li>• Compromiso de credenciales</li>
+                        <li>• Escalación de privilegios</li>
+                        <li>• Bypass de controles de acceso</li>
+                        <li>• Acceso físico no autorizado</li>
+                      </ul>
+                    </div>
+                    
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-400">
+                      <h4 class="font-semibold text-orange-800 mb-2">🦠 Malware y Código Malicioso</h4>
+                      <ul class="text-orange-700 text-sm space-y-1">
+                        <li>• Ransomware</li>
+                        <li>• Troyanos bancarios</li>
+                        <li>• Keyloggers</li>
+                        <li>• Backdoors</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                      <h4 class="font-semibold text-yellow-800 mb-2">📧 Ataques de Phishing</h4>
+                      <ul class="text-yellow-700 text-sm space-y-1">
+                        <li>• Correos electrónicos maliciosos</li>
+                        <li>• Sitios web fraudulentos</li>
+                        <li>• Vishing (phishing telefónico)</li>
+                        <li>• Smishing (phishing por SMS)</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">💾 Fuga de Información</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• Exposición de datos personales</li>
+                        <li>• Filtración de información financiera</li>
+                        <li>• Robo de propiedad intelectual</li>
+                        <li>• Divulgación no autorizada</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">⚡ Interrupción de Servicios</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• Ataques DDoS</li>
+                        <li>• Fallos de sistema</li>
+                        <li>• Corrupción de datos</li>
+                        <li>• Indisponibilidad de servicios críticos</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">🏢 Amenazas Internas</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• Empleados maliciosos</li>
+                        <li>• Negligencia o errores</li>
+                        <li>• Abuso de privilegios</li>
+                        <li>• Violación de políticas</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⏰ Proceso de Respuesta a Incidentes</h3>
+                
+                <div class="space-y-6">
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Fase 1: Detección e Identificación (0-15 minutos)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Fuentes de Detección</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• <strong>SIEM/SOC:</strong> Alertas automáticas</li>
+                          <li>• <strong>Usuarios:</strong> Reportes de comportamiento extraño</li>
+                          <li>• <strong>Monitoreo:</strong> Herramientas de supervisión</li>
+                          <li>• <strong>Auditorías:</strong> Revisiones programadas</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Acciones Inmediatas</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Documentar fecha/hora de detección</li>
+                          <li>• Identificar sistemas afectados</li>
+                          <li>• Evaluar alcance inicial</li>
+                          <li>• Activar equipo de respuesta</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Fase 2: Contención (15-60 minutos)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Contención Inmediata</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Aislar sistemas comprometidos</li>
+                          <li>• Bloquear cuentas sospechosas</li>
+                          <li>• Cambiar credenciales afectadas</li>
+                          <li>• Preservar evidencia digital</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Comunicación Inicial</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Notificar a gerencia</li>
+                          <li>• Activar cadena de escalamiento</li>
+                          <li>• Contactar equipos técnicos</li>
+                          <li>• Preparar comunicado interno</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-800 mb-3">Fase 3: Investigación (1-24 horas)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Análisis Forense</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Recolección de evidencia</li>
+                          <li>• Análisis de logs</li>
+                          <li>• Determinación de causa raíz</li>
+                          <li>• Evaluación de impacto</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 class="font-medium text-gray-800 mb-2">Documentación</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                          <li>• Cronología detallada</li>
+                          <li>• Sistemas y datos afectados</li>
+                          <li>• Acciones de respuesta tomadas</li>
+                          <li>• Evidencia recolectada</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">📋 Requerimientos de Reporte SFC</h3>
+                
+                <div class="space-y-4">
+                  <div class="bg-red-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-red-800 mb-3">Reporte Inicial (Máximo 24 horas)</h4>
+                    <div class="text-sm text-red-700 space-y-2">
+                      <p><strong>Formato:</strong> Circular Externa 013 de 2022 - Anexo 3</p>
+                      <p><strong>Información mínima requerida:</strong></p>
+                      <ul class="ml-4 space-y-1">
+                        <li>• Fecha y hora de detección</li>
+                        <li>• Tipo de incidente (clasificación)</li>
+                        <li>• Sistemas o servicios afectados</li>
+                        <li>• Impacto preliminar en usuarios/operaciones</li>
+                        <li>• Medidas de contención implementadas</li>
+                        <li>• Estado actual del incidente</li>
+                        <li>• Tiempo estimado de resolución</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-orange-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-orange-800 mb-3">Reporte de Seguimiento</h4>
+                    <div class="text-sm text-orange-700 space-y-2">
+                      <p><strong>Frecuencia:</strong> Cada 72 horas hasta resolución</p>
+                      <p><strong>Actualizaciones requeridas:</strong></p>
+                      <ul class="ml-4 space-y-1">
+                        <li>• Progreso en la investigación</li>
+                        <li>• Nuevos hallazgos significativos</li>
+                        <li>• Cambios en el impacto o alcance</li>
+                        <li>• Medidas adicionales implementadas</li>
+                        <li>• Revisión del tiempo de resolución</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="bg-green-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-green-800 mb-3">Reporte Final (Máximo 30 días)</h4>
+                    <div class="text-sm text-green-700 space-y-2">
+                      <p><strong>Contenido del reporte final:</strong></p>
+                      <ul class="ml-4 space-y-1">
+                        <li>• Análisis detallado de causa raíz</li>
+                        <li>• Cronología completa del incidente</li>
+                        <li>• Impacto final cuantificado</li>
+                        <li>• Medidas correctivas implementadas</li>
+                        <li>• Plan de mejoras y lecciones aprendidas</li>
+                        <li>• Evidencia forense relevante</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">🛠️ Herramientas de Reporte y Gestión</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                      <h4 class="font-semibold text-blue-800 mb-2">Plataformas de Gestión</h4>
+                      <ul class="text-blue-700 text-sm space-y-1">
+                        <li>• <strong>ServiceNow Security:</strong> Workflow automatizado</li>
+                        <li>• <strong>Jira Service Management:</strong> Tracking de incidentes</li>
+                        <li>• <strong>Splunk Phantom:</strong> Orquestación de respuesta</li>
+                        <li>• <strong>IBM Resilient:</strong> Gestión integral de incidentes</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                      <h4 class="font-semibold text-purple-800 mb-2">Análisis Forense</h4>
+                      <ul class="text-purple-700 text-sm space-y-1">
+                        <li>• <strong>Volatility:</strong> Análisis de memoria</li>
+                        <li>• <strong>Autopsy:</strong> Investigación de discos</li>
+                        <li>• <strong>Wireshark:</strong> Análisis de tráfico de red</li>
+                        <li>• <strong>YARA:</strong> Detección de malware</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                      <h4 class="font-semibold text-green-800 mb-2">Comunicación y Reporting</h4>
+                      <ul class="text-green-700 text-sm space-y-1">
+                        <li>• <strong>Microsoft Teams:</strong> Comunicación del equipo</li>
+                        <li>• <strong>Slack:</strong> Canales de incidentes</li>
+                        <li>• <strong>Confluence:</strong> Documentación centralizada</li>
+                        <li>• <strong>SharePoint:</strong> Repositorio de evidencia</li>
+                      </ul>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                      <h4 class="font-semibold text-yellow-800 mb-2">Automatización</h4>
+                      <ul class="text-yellow-700 text-sm space-y-1">
+                        <li>• <strong>SOAR:</strong> Respuesta automatizada</li>
+                        <li>• <strong>Playbooks:</strong> Procedimientos estandarizados</li>
+                        <li>• <strong>Scripts:</strong> Recolección automática de datos</li>
+                        <li>• <strong>APIs:</strong> Integración entre herramientas</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">⚠️ Caso de Estudio: Ataque de Ransomware</h3>
+                
+                <div class="bg-gray-100 p-6 rounded-lg">
+                  <div class="space-y-4 text-sm">
+                    <div>
+                      <h4 class="font-semibold text-gray-800 mb-2">Escenario</h4>
+                      <p class="text-gray-700">
+                        Lunes 08:30 AM - El SOC detecta cifrado masivo de archivos en servidores de archivos. 
+                        Los usuarios reportan imposibilidad de acceder a documentos. Se identifica ransomware 
+                        con demanda de $2M USD en Bitcoin.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 class="font-semibold text-gray-800 mb-2">Cronología de Respuesta</h4>
+                      <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                          <span class="font-medium text-blue-600">08:35</span>
+                          <span class="text-gray-700 flex-1 ml-4">Aislamiento inmediato de servidores afectados</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                          <span class="font-medium text-blue-600">08:45</span>
+                          <span class="text-gray-700 flex-1 ml-4">Activación del equipo de respuesta a incidentes</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                          <span class="font-medium text-blue-600">09:15</span>
+                          <span class="text-gray-700 flex-1 ml-4">Notificación a gerencia y preparación de reporte SFC</span>
+                        </div>
+                        <div class="flex justify-between items-start">
+                          <span class="font-medium text-red-600">10:30</span>
+                          <span class="text-gray-700 flex-1 ml-4">Reporte inicial enviado a SFC (dentro de 24h)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                      <h4 class="font-semibold text-green-800 mb-2">Lecciones Aprendidas</h4>
+                      <ul class="text-green-700 space-y-1">
+                        <li>• Los backups offline permitieron recuperación sin pagar rescate</li>
+                        <li>• La segmentación de red limitó la propagación</li>
+                        <li>• La comunicación temprana con SFC evitó sanciones adicionales</li>
+                        <li>• Se implementaron mejoras en detección temprana</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-8 bg-blue-50 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold text-blue-800 mb-4">🎯 Ejercicio Práctico</h3>
+                <div class="space-y-4">
+                  <div>
+                    <p class="font-medium text-blue-800 mb-2">
+                      Es viernes 5:00 PM. Detectas que un empleado ha descargado información confidencial de 
+                      50,000 clientes a un USB personal antes de renunciar. ¿Cuál es la secuencia correcta de acciones?
+                    </p>
+                    <div class="space-y-2 text-sm">
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="incident-scenario" value="wrong" class="text-blue-600">
+                        <span>Esperar al lunes para investigar completamente</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="incident-scenario" value="wrong" class="text-blue-600">
+                        <span>Contactar solo al empleado para recuperar la información</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="incident-scenario" value="correct" class="text-blue-600">
+                        <span>Contener, documentar, reportar a SFC en 24h y activar equipo legal</span>
+                      </label>
+                      <label class="flex items-center space-x-2">
+                        <input type="radio" name="incident-scenario" value="wrong" class="text-blue-600">
+                        <span>Manejar internamente sin reportar a autoridades</span>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-blue-100 p-4 rounded-lg">
+                    <p class="text-blue-800 text-sm">
+                      <strong>Recordatorio:</strong> La fuga de datos personales es un incidente de reporte obligatorio 
+                      independientemente del día de la semana. El tiempo comienza a contar desde la detección.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center">
+                <button id="completeLesson" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Completar Lección (+45 puntos)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      getGenericLessonContent(title, points) {
+        return `
+          <div class="p-8">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-2xl font-bold text-gray-900">${title}</h2>
+                <p class="text-blue-600 font-medium">🏆 ${points} puntos disponibles</p>
+              </div>
+              <button id="closeModal" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button>
+            </div>
+            
+            <div class="bg-blue-50 p-6 rounded-xl text-center">
+              <div class="text-4xl mb-4">🚧</div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Lección en desarrollo</h3>
+              <p class="text-gray-700 mb-6">Esta lección estará disponible próximamente.</p>
+              <button id="completeLesson" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Marcar como vista (+${points} pts)
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      bindModalEvents(lessonId, lessonTitle, lessonPoints) {
+        const closeBtn = document.getElementById('closeModal');
+        const completeBtn = document.getElementById('completeLesson');
+        const modal = document.getElementById('lessonModal');
+        const modalContent = document.getElementById('modalContent');
+
+        // Cerrar modal
+        const closeModal = () => {
+          modalContent.classList.add('scale-95', 'opacity-0');
+          modalContent.classList.remove('scale-100', 'opacity-100');
+          setTimeout(() => {
+            modal.classList.add('hidden');
+          }, 300);
+        };
+
+        closeBtn.addEventListener('click', closeModal);
+        
+        // Cerrar con click fuera del modal
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) closeModal();
+        });
+
+        // Completar lección
+        completeBtn.addEventListener('click', () => {
+          this.completeLesson(lessonId, lessonTitle, parseInt(lessonPoints));
+          closeModal();
+        });
+      }
+
+      completeLesson(lessonId, lessonTitle, points) {
+        if (window.gameSystem) {
+          const completed = window.gameSystem.completeLesson(lessonId, lessonTitle, points);
+          
+          if (completed) {
+            // Actualizar estadísticas diarias
+            const user = window.authSystem?.getCurrentUser();
+            if (user && window.updateDailyStatsOnLessonComplete) {
+              window.updateDailyStatsOnLessonComplete(user.email, points);
+            }
+            
+            // Actualizar UI del botón
+            const button = document.querySelector(`[data-lesson-id="${lessonId}"]`);
+            if (button) {
+              this.markLessonCompleted(button);
+            }
+            
+            // Mostrar notificación de éxito
+            this.showSuccessNotification(lessonTitle, points);
+            
+            // Actualizar estadísticas en tiempo real
+            setTimeout(() => {
+              if (window.gameSystem) {
+                window.gameSystem.updateUI();
+              }
+              
+              // Notificar a otras páginas sobre la actualización
+              try {
+                localStorage.setItem('statsUpdateTrigger', Date.now().toString());
+                console.log('Stats update trigger sent from Dashboard');
+              } catch (e) {
+                console.log('Error triggering stats update:', e);
+              }
+            }, 500);
+          }
+        }
+      }
+
+      showSuccessNotification(lessonTitle, points) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+        notification.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🎉</span>
+            <div>
+              <div class="font-semibold">¡Lección completada!</div>
+              <div class="text-sm opacity-90">${lessonTitle} (+${points} pts)</div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => notification.remove(), 300);
+        }, 4000);
+      }
+    }
+
+    // Inicializar sistema de lecciones
+    window.lessonSystem = new LessonSystem();
+
+    // Actualizar estadísticas cuando el usuario regresa a la página
+    window.addEventListener('focus', () => {
+      setTimeout(() => {
+        if (window.authSystem && window.authSystem.isLoggedIn()) {
+          const user = window.authSystem.getCurrentUser();
+          if (user) {
+            updateDailyStats(user);
+          }
+        }
+      }, 300);
+    });
+  </script>
+</Layout>

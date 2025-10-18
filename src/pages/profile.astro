@@ -1,0 +1,665 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+---
+
+<Layout title="Mi Perfil - SecureLearn Pro">
+  <Navigation />
+  
+  <!-- Header de perfil -->
+  <section class="bg-gradient-to-r from-blue-600 to-purple-600 py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-xl shadow-xl p-8">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+          <div class="profile-avatar w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+            U
+          </div>
+          <div class="text-center md:text-left flex-1">
+            <h1 class="profile-name text-3xl font-bold text-gray-900 mb-2">Usuario</h1>
+            <p class="profile-email text-gray-600 mb-4">usuario@ejemplo.com</p>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+              <div class="bg-blue-50 px-4 py-2 rounded-lg">
+                <span class="text-blue-600 font-semibold">Nivel <span class="profile-level">0</span></span>
+              </div>
+              <div class="bg-green-50 px-4 py-2 rounded-lg">
+                <span class="text-green-600 font-semibold"><span class="profile-points">0</span> puntos</span>
+              </div>
+              <div class="bg-purple-50 px-4 py-2 rounded-lg">
+                <span class="text-purple-600 font-semibold">Miembro desde <span class="profile-join-date">hoy</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Editar Perfil
+            </button>
+            <button id="resetLessonsBtn" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+              🔄 Reset Lecciones
+            </button>
+            <button id="logoutBtn" class="border border-red-600 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Estadísticas y progreso -->
+  <section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Estadísticas del Día -->
+      <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-8 mb-12 border border-blue-200">
+        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+          📊 Estadísticas del Día
+          <span class="text-sm font-normal text-gray-500 bg-white px-3 py-1 rounded-full">
+            Hoy: ${new Date().toLocaleDateString('es-CO')}
+          </span>
+        </h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Métricas del Día -->
+          <div class="lg:col-span-2">
+            <h4 class="text-lg font-semibold text-gray-700 mb-4">📈 Progreso de Hoy</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-gray-600 text-sm">Lecciones completadas hoy</span>
+                  <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">HOY</span>
+                </div>
+                <div id="profileDailyLessonsCompleted" class="text-2xl font-bold text-blue-600">0/9</div>
+              </div>
+              
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-green-100">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-gray-600 text-sm">Tiempo de estudio hoy</span>
+                  <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">ACTIVO</span>
+                </div>
+                <div id="profileDailyStudyTime" class="text-2xl font-bold text-green-600">0 min</div>
+              </div>
+              
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-purple-100">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-gray-600 text-sm">Puntos ganados hoy</span>
+                  <span class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded">PUNTOS</span>
+                </div>
+                <div id="profileDailyPointsEarned" class="text-2xl font-bold text-purple-600">0 pts</div>
+              </div>
+              
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-indigo-100">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-gray-600 text-sm">Meta diaria</span>
+                  <span class="text-xs text-indigo-600 bg-indigo-100 px-2 py-1 rounded">META</span>
+                </div>
+                <div id="profileDailyGoalProgress" class="text-2xl font-bold text-indigo-600">0/2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progreso Visual y Racha -->
+          <div class="space-y-6">
+            <!-- Meta Diaria Visual -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <h5 class="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                🎯 Meta Diaria
+              </h5>
+              <div class="text-center mb-4">
+                <div id="profileDailyGoalPercentage" class="text-3xl font-bold text-blue-600 mb-1">0%</div>
+                <p class="text-sm text-gray-600">Progreso hacia meta</p>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                <div id="profileDailyGoalBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <p class="text-xs text-gray-500 text-center">Meta: 2 lecciones por día</p>
+            </div>
+
+            <!-- Racha de Estudio Destacada -->
+            <div class="bg-gradient-to-r from-orange-100 to-red-100 p-6 rounded-lg border border-orange-300">
+              <div class="text-center">
+                <div class="text-4xl mb-2">🔥</div>
+                <div id="profileStreakDays" class="text-3xl font-bold text-orange-600 mb-1">0</div>
+                <p class="text-sm text-orange-700 font-medium">Días consecutivos</p>
+                <p class="text-xs text-orange-600 mt-2">¡Mantén la racha estudiando hoy!</p>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              <h6 class="font-medium text-gray-700 mb-3">🚀 Acciones Rápidas</h6>
+              <div class="space-y-2">
+                <button 
+                  onclick="window.location.href='/'"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                >
+                  Ir al Dashboard
+                </button>
+                <button 
+                  onclick="window.location.href='/learning'"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                >
+                  Ver Micro-Learning
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progreso por categorías -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-6">Progreso por Categoría</h3>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span>Phishing</span>
+                <span>20%</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full" style="width: 20%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span>Ingeniería Social</span>
+                <span>0%</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2">
+                <div class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span>Contraseñas</span>
+                <span>50%</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2">
+                <div class="bg-purple-600 h-2 rounded-full" style="width: 50%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <span>Normativas</span>
+                <span>0%</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2">
+                <div class="bg-orange-600 h-2 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Insignias ganadas -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-6">Insignias Recientes</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+              <div class="text-3xl mb-2">🎯</div>
+              <div class="text-xs font-medium text-yellow-800">Primer Paso</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+              <div class="text-3xl mb-2 grayscale">🕵️</div>
+              <div class="text-xs font-medium text-gray-500">Detector</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-200 opacity-50">
+              <div class="text-3xl mb-2 grayscale">📅</div>
+              <div class="text-xs font-medium text-gray-500">Constancia</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividad reciente -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-6">Actividad Reciente</h3>
+        <div class="space-y-4">
+          <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-lg">
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
+              📚
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-gray-900">Te uniste a SecureLearn Pro</p>
+              <p class="text-sm text-gray-600">Bienvenido a la plataforma</p>
+            </div>
+            <span class="text-sm text-gray-500">Hace unos momentos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script para cargar datos del usuario -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserProfile();
+      
+      // Manejar logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        if (window.authSystem) {
+          window.authSystem.logout();
+        }
+      });
+
+      // Manejar reset de lecciones
+      document.getElementById('resetLessonsBtn').addEventListener('click', () => {
+        resetUserProgress();
+      });
+
+      // Cargar estadísticas después de un pequeño delay para asegurar que los sistemas estén cargados
+      setTimeout(() => {
+        if (window.authSystem && window.authSystem.isLoggedIn()) {
+          const user = window.authSystem.getCurrentUser();
+          if (user) {
+            loadProfileStatistics(user);
+            loadDailyStatistics(user);
+          }
+        }
+      }, 200);
+    });
+
+    function loadUserProfile() {
+      if (window.authSystem && window.authSystem.isLoggedIn()) {
+        const user = window.authSystem.getCurrentUser();
+        
+        // Actualizar información del perfil
+        document.querySelector('.profile-name').textContent = user.name;
+        document.querySelector('.profile-email').textContent = user.email;
+        document.querySelector('.profile-level').textContent = user.level || 0;
+        document.querySelector('.profile-points').textContent = user.points || 0;
+        
+        // Actualizar fecha de registro
+        if (user.joinDate) {
+          const joinDate = new Date(user.joinDate);
+          document.querySelector('.profile-join-date').textContent = joinDate.toLocaleDateString('es-CO');
+        }
+        
+        // Actualizar avatar
+        const avatarElement = document.querySelector('.profile-avatar');
+        if (user.avatar) {
+          avatarElement.innerHTML = `<img src="${user.avatar}" alt="${user.name}" class="w-24 h-24 rounded-full object-cover">`;
+        } else {
+          avatarElement.textContent = user.name.charAt(0).toUpperCase();
+        }
+      } else {
+        // Redirigir al login si no está autenticado
+        window.location.href = '/login';
+      }
+    }
+
+    function loadProfileStatistics(user) {
+      const userEmail = user.email;
+      
+      // Obtener datos del usuario
+      const userProgress = JSON.parse(localStorage.getItem(`userProgress_${userEmail}`) || '{}');
+      const gameData = JSON.parse(localStorage.getItem(`gameData_${userEmail}`) || '{}');
+      const streakData = JSON.parse(localStorage.getItem(`streak_${userEmail}`) || '{}');
+      
+      // Calcular estadísticas generales
+      const completedLessons = Object.keys(userProgress).length;
+      const totalPoints = gameData.totalPoints || 0;
+      const currentStreak = calculateCurrentStreak(streakData);
+      
+      // Calcular tiempo total de estudio (aproximado)
+      const totalStudyTime = completedLessons * 5; // 5 minutos por lección
+      
+      // Actualizar estadísticas generales
+      const profileCompletedLessons = document.getElementById('profileCompletedLessons');
+      const profileTotalStudyTime = document.getElementById('profileTotalStudyTime');
+      const profileSimulationCount = document.getElementById('profileSimulationCount');
+      const profileCurrentStreak = document.getElementById('profileCurrentStreak');
+      
+      if (profileCompletedLessons) {
+        profileCompletedLessons.textContent = completedLessons.toString();
+      }
+      
+      if (profileTotalStudyTime) {
+        profileTotalStudyTime.textContent = `${totalStudyTime} min`;
+      }
+      
+      if (profileSimulationCount) {
+        // Por ahora mantener en 0, se puede expandir en el futuro
+        profileSimulationCount.textContent = '0';
+      }
+      
+      if (profileCurrentStreak) {
+        profileCurrentStreak.textContent = currentStreak.toString();
+      }
+    }
+
+    function loadDailyStatistics(user) {
+      const userEmail = user.email;
+      const today = new Date().toDateString();
+      
+      // Obtener datos del día
+      const dailyData = JSON.parse(localStorage.getItem(`dailyStats_${userEmail}`) || '{}');
+      const streakData = JSON.parse(localStorage.getItem(`streak_${userEmail}`) || '{}');
+      
+      // Calcular estadísticas del día
+      const todaysProgress = dailyData[today] || { lessonsCompleted: 0, pointsEarned: 0, studyTimeMinutes: 0 };
+      const currentStreak = calculateCurrentStreak(streakData);
+      
+      // Meta diaria (2 lecciones por día)
+      const dailyGoal = 2;
+      const dailyProgress = Math.min(todaysProgress.lessonsCompleted, dailyGoal);
+      const dailyGoalPercentage = Math.round((dailyProgress / dailyGoal) * 100);
+
+      // Actualizar estadísticas del día
+      updateProfileDailyStatsUI({
+        dailyLessonsCompleted: todaysProgress.lessonsCompleted,
+        totalLessons: 9,
+        dailyStudyTime: todaysProgress.studyTimeMinutes,
+        dailyPointsEarned: todaysProgress.pointsEarned,
+        currentStreak,
+        dailyGoalProgress: dailyProgress,
+        dailyGoal,
+        dailyGoalPercentage
+      });
+    }
+
+    function updateProfileDailyStatsUI(stats) {
+      // Actualizar elementos de estadísticas del día
+      const elements = {
+        profileDailyLessonsCompleted: document.getElementById('profileDailyLessonsCompleted'),
+        profileDailyStudyTime: document.getElementById('profileDailyStudyTime'),
+        profileDailyPointsEarned: document.getElementById('profileDailyPointsEarned'),
+        profileDailyGoalProgress: document.getElementById('profileDailyGoalProgress'),
+        profileDailyGoalPercentage: document.getElementById('profileDailyGoalPercentage'),
+        profileDailyGoalBar: document.getElementById('profileDailyGoalBar'),
+        profileStreakDays: document.getElementById('profileStreakDays')
+      };
+
+      if (elements.profileDailyLessonsCompleted) {
+        elements.profileDailyLessonsCompleted.textContent = `${stats.dailyLessonsCompleted}/${stats.totalLessons}`;
+      }
+
+      if (elements.profileDailyStudyTime) {
+        elements.profileDailyStudyTime.textContent = `${stats.dailyStudyTime} min`;
+      }
+
+      if (elements.profileDailyPointsEarned) {
+        elements.profileDailyPointsEarned.textContent = `${stats.dailyPointsEarned} pts`;
+      }
+
+      if (elements.profileDailyGoalProgress) {
+        elements.profileDailyGoalProgress.textContent = `${stats.dailyGoalProgress}/${stats.dailyGoal}`;
+      }
+
+      if (elements.profileDailyGoalPercentage) {
+        elements.profileDailyGoalPercentage.textContent = `${stats.dailyGoalPercentage}%`;
+      }
+
+      if (elements.profileStreakDays) {
+        elements.profileStreakDays.textContent = stats.currentStreak.toString();
+      }
+
+      if (elements.profileDailyGoalBar) {
+        elements.profileDailyGoalBar.style.width = `${stats.dailyGoalPercentage}%`;
+        
+        // Cambiar color según el progreso
+        if (stats.dailyGoalPercentage >= 100) {
+          elements.profileDailyGoalBar.className = 'bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-500';
+        } else if (stats.dailyGoalPercentage >= 50) {
+          elements.profileDailyGoalBar.className = 'bg-gradient-to-r from-yellow-500 to-orange-600 h-3 rounded-full transition-all duration-500';
+        } else {
+          elements.profileDailyGoalBar.className = 'bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500';
+        }
+      }
+    }
+
+    function calculateCurrentStreak(streakData) {
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+      
+      if (streakData.lastStudyDate === today) {
+        return streakData.currentStreak || 1;
+      } else if (streakData.lastStudyDate === yesterday) {
+        return streakData.currentStreak || 0;
+      } else {
+        return 0;
+      }
+    }
+
+    // Actualizar estadísticas cuando el usuario regresa a la página
+    window.addEventListener('focus', () => {
+      setTimeout(() => {
+        if (window.authSystem && window.authSystem.isLoggedIn()) {
+          const user = window.authSystem.getCurrentUser();
+          if (user) {
+            loadProfileStatistics(user);
+            loadDailyStatistics(user);
+          }
+        }
+      }, 300);
+    });
+
+    // Función para resetear el progreso del usuario
+    function resetUserProgress() {
+      const confirmed = confirm('⚠️ ¿Estás seguro de que quieres resetear todo tu progreso?\n\nEsto eliminará:\n✗ Todas las lecciones completadas\n✗ Puntos ganados\n✗ Estadísticas diarias\n✗ Racha de días\n✗ Nivel actual\n✗ Tu progreso (nivel y puntos)\n\nEsta acción no se puede deshacer.');
+      
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        // Obtener usuario actual con múltiples métodos
+        let currentUser = null;
+        
+        // Método 1: Desde window.authSystem
+        if (window.authSystem && typeof window.authSystem.getCurrentUser === 'function') {
+          currentUser = window.authSystem.getCurrentUser();
+          console.log('🔍 User from authSystem:', currentUser);
+        }
+        
+        // Método 2: Desde localStorage directamente
+        if (!currentUser) {
+          const savedUser = localStorage.getItem('currentUser');
+          if (savedUser) {
+            try {
+              currentUser = JSON.parse(savedUser);
+              console.log('🔍 User from localStorage:', currentUser);
+            } catch (e) {
+              console.log('❌ Error parsing saved user:', e);
+            }
+          }
+        }
+        
+        // Método 3: Desde authSystem en localStorage
+        if (!currentUser) {
+          const authSystemData = localStorage.getItem('authSystem');
+          if (authSystemData) {
+            try {
+              const authData = JSON.parse(authSystemData);
+              currentUser = authData.currentUser;
+              console.log('🔍 User from authSystem localStorage:', currentUser);
+            } catch (e) {
+              console.log('❌ Error parsing authSystem data:', e);
+            }
+          }
+        }
+
+        if (!currentUser || !currentUser.email) {
+          alert('❌ No se pudo identificar el usuario actual. Verifica que estés autenticado.');
+          console.log('❌ No current user found');
+          return;
+        }
+
+        console.log('🔄 Resetting progress for user:', currentUser.email);
+
+        // MÉTODO 1: Limpiar las propiedades del usuario actual
+        if (currentUser) {
+          const cleanUser = {
+            id: currentUser.id,
+            name: currentUser.name,
+            email: currentUser.email,
+            loginMethod: currentUser.loginMethod,
+            avatar: currentUser.avatar,
+            joinDate: currentUser.joinDate,
+            // Resetear todas las propiedades de progreso
+            level: 1,
+            points: 0,
+            completedLessons: [],
+            lessonProgress: {}
+          };
+          
+          // Actualizar el usuario en localStorage
+          localStorage.setItem('currentUser', JSON.stringify(cleanUser));
+          console.log('🔄 User object reset:', cleanUser);
+          
+          // Actualizar authSystem si existe
+          if (window.authSystem) {
+            window.authSystem.currentUser = cleanUser;
+            const authSystemData = {
+              currentUser: cleanUser
+            };
+            localStorage.setItem('authSystem', JSON.stringify(authSystemData));
+            console.log('🔄 AuthSystem updated');
+          }
+        }
+
+        // MÉTODO 2: Lista completa de claves a eliminar
+        const keysToRemove = [
+          `userProgress_${currentUser.email}`,
+          `gameData_${currentUser.email}`,
+          `dailyStats_${currentUser.email}`,
+          `streakData_${currentUser.email}`,
+          `achievements_${currentUser.email}`,
+          `lastLoginDate_${currentUser.email}`,
+          `lessonProgress_${currentUser.email}`,
+          `userStats_${currentUser.email}`,
+          `completedLessons_${currentUser.email}`,
+          `securityPoints_${currentUser.id}`, // Puntos específicos del usuario por ID
+          `securityPoints_${currentUser.email}`, // Puntos específicos del usuario por email (por si acaso)
+          'securityPoints', // Puntos globales
+          'userLevel', // Nivel global
+          'gameState', // Estado del juego
+          'progressData' // Datos de progreso general
+        ];
+
+        // Eliminar cada clave
+        let removedCount = 0;
+        keysToRemove.forEach(key => {
+          if (localStorage.getItem(key)) {
+            localStorage.removeItem(key);
+            console.log('🗑️ Removed:', key);
+            removedCount++;
+          }
+        });
+
+        // MÉTODO 3: Buscar y eliminar cualquier clave que contenga el email o ID del usuario
+        const allKeys = Object.keys(localStorage);
+        allKeys.forEach(key => {
+          if ((key.includes(currentUser.email) || key.includes(currentUser.id)) && !keysToRemove.includes(key)) {
+            localStorage.removeItem(key);
+            console.log('🗑️ Additional key removed:', key);
+            removedCount++;
+          }
+        });
+
+        console.log(`✅ Total keys removed: ${removedCount}`);
+
+        // Mostrar notificación de éxito
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+        notification.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🔄</span>
+            <div>
+              <div class="font-semibold">¡Progreso reiniciado!</div>
+              <div class="text-sm opacity-90">Usuario reseteado + ${removedCount} claves eliminadas</div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Forzar actualización del estado en el gameSystem si existe
+        if (window.gameSystem) {
+          const resetUser = JSON.parse(localStorage.getItem('currentUser'));
+          
+          // Resetear completamente el gameSystem
+          window.gameSystem.points = 0;
+          window.gameSystem.level = 1;
+          window.gameSystem.completedLessons = [];
+          window.gameSystem.lessonsProgress = {};
+          
+          // Forzar guardar el estado reseteado para el usuario
+          if (resetUser) {
+            const userKey = `securityPoints_${resetUser.id}`;
+            localStorage.setItem(userKey, '0');
+            console.log(`🔄 Reset security points for user ${resetUser.id}: 0`);
+            
+            // Actualizar el usuario con los datos reseteados
+            resetUser.points = 0;
+            resetUser.level = 1;
+            resetUser.completedLessons = [];
+            resetUser.lessonsProgress = {};
+            localStorage.setItem('currentUser', JSON.stringify(resetUser));
+          }
+          
+          // AHORA SÍ sincronizar con el usuario ya reseteado
+          if (typeof window.gameSystem.syncWithUser === 'function') {
+            window.gameSystem.syncWithUser(resetUser);
+          }
+          
+          if (typeof window.gameSystem.updateUI === 'function') {
+            window.gameSystem.updateUI();
+          }
+          
+          console.log('🔄 GameSystem completely reset:', window.gameSystem);
+        }
+        
+        // Forzar actualización de la UI inmediatamente
+        setTimeout(() => {
+          // Actualizar ProgressCard elements
+          const levelDisplay = document.getElementById('levelDisplay');
+          const pointsDisplayCard = document.getElementById('pointsDisplay');
+          const progressText = document.getElementById('progressText');
+          const progressBar = document.getElementById('progressBar');
+          
+          if (levelDisplay) {
+            levelDisplay.textContent = 'Nivel 1';
+            console.log('🔄 Level display updated');
+          }
+          if (pointsDisplayCard) {
+            pointsDisplayCard.textContent = '0 puntos';
+            console.log('🔄 Points display updated');
+          }
+          if (progressText) {
+            progressText.textContent = '0/100';
+            console.log('🔄 Progress text updated');
+          }
+          if (progressBar) {
+            progressBar.style.width = '0%';
+            console.log('🔄 Progress bar updated');
+          }
+          
+          // Actualizar navegación
+          const pointsDisplayNav = document.querySelector('.points-display');
+          if (pointsDisplayNav) {
+            pointsDisplayNav.textContent = 'Nivel 1 • 0 pts';
+            console.log('🔄 Navigation points updated');
+          }
+        }, 100);
+        
+        // Disparar evento de actualización para otras páginas
+        window.dispatchEvent(new Event('storage'));
+        localStorage.setItem('forceUpdate', Date.now().toString());
+        
+        // Recargar la página después de un breve delay
+        setTimeout(() => {
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            notification.remove();
+            console.log('🔄 Reloading page...');
+            window.location.reload();
+          }, 300);
+        }, 2500);
+
+      } catch (error) {
+        console.error('❌ Error resetting progress:', error);
+        alert('❌ Error al resetear el progreso. Por favor, inténtalo de nuevo.');
+      }
+    }
+  </script>
+</Layout>

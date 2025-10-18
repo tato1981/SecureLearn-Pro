@@ -1,0 +1,281 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Plataforma de Micro-Learning Gamificada para Ciberseguridad en Instituciones Financieras" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Sign-In SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+  </head>
+  <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 font-sans">
+    <main class="relative">
+      <slot />
+    </main>
+    
+    <!-- Scripts para gamificación y autenticación -->
+    <script src="/src/services/google-auth.js"></script>
+    <script is:inline>
+      // Sistema de autenticación
+      class AuthSystem {
+        constructor() {
+          this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+          this.googleAuth = null;
+          this.initializeGoogleAuth();
+        }
+
+        async initializeGoogleAuth() {
+          try {
+            // Esperar a que el SDK de Google esté disponible
+            if (typeof GoogleAuthService !== 'undefined') {
+              this.googleAuth = new GoogleAuthService();
+              await this.googleAuth.initialize();
+            }
+          } catch (error) {
+            console.warn('Google Auth no disponible:', error);
+          }
+        }
+
+        isLoggedIn() {
+          return this.currentUser !== null;
+        }
+
+        getCurrentUser() {
+          return this.currentUser;
+        }
+
+        setCurrentUser(user) {
+          this.currentUser = user;
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          
+          // Sincronizar con el sistema de gamificación
+          if (window.gameSystem) {
+            window.gameSystem.syncWithUser(user);
+          }
+        }
+
+        logout() {
+          // Cerrar sesión de Google si es necesario
+          if (this.currentUser && this.currentUser.loginMethod === 'google' && this.googleAuth) {
+            this.googleAuth.signOut();
+          }
+          
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('securityPoints');
+          this.currentUser = null;
+          window.location.href = '/login';
+        }
+
+        checkAuthAndRedirect() {
+          if (!this.isLoggedIn() && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
+        }
+
+        showNotification(message, type = 'info') {
+          const notification = document.createElement('div');
+          const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            info: 'bg-blue-500'
+          };
+          
+          notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
+          notification.textContent = message;
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => notification.remove(), 300);
+          }, 3000);
+        }
+      }
+
+      // Sistema de gamificación actualizado
+      class GameificationSystem {
+        constructor() {
+          this.authSystem = new AuthSystem();
+          this.points = 0;
+          this.level = 0;
+          this.completedLessons = [];
+          this.lessonsProgress = {};
+          this.initializeUserProgress();
+        }
+
+        initializeUserProgress() {
+          const user = this.authSystem.getCurrentUser();
+          if (user) {
+            // Verificar si es un usuario completamente nuevo (sin progreso previo)
+            const userKey = `securityPoints_${user.id}`;
+            const existingPoints = localStorage.getItem(userKey);
+            
+            if (existingPoints === null || user.points === undefined) {
+              // Usuario nuevo - inicializar todo en 0
+              this.points = 0;
+              this.level = 1; // Nivel inicial es 1, no 0
+              this.completedLessons = [];
+              this.lessonsProgress = {};
+              
+              // Actualizar usuario con valores iniciales
+              user.points = this.points;
+              user.level = this.level;
+              user.completedLessons = this.completedLessons;
+              user.lessonsProgress = this.lessonsProgress;
+              
+              // Guardar progreso inicial
+              this.saveUserProgress();
+              
+              console.log(`👤 Usuario nuevo inicializado: ${user.name} - Nivel ${this.level}, ${this.points} puntos`);
+            } else {
+              // Usuario existente - cargar progreso guardado
+              this.points = parseInt(existingPoints) || 0;
+              this.level = Math.floor(this.points / 100) + 1;
+              this.completedLessons = user.completedLessons || [];
+              this.lessonsProgress = user.lessonsProgress || {};
+              
+              console.log(`👤 Usuario existente cargado: ${user.name} - Nivel ${this.level}, ${this.points} puntos`);
+            }
+          }
+        }
+        
+        syncWithUser(user = null) {
+          const currentUser = user || this.authSystem.getCurrentUser();
+          if (currentUser) {
+            // Cargar puntos específicos del usuario
+            const userKey = `securityPoints_${currentUser.id}`;
+            this.points = parseInt(localStorage.getItem(userKey) || '0');
+            this.level = Math.floor(this.points / 100) + 1;
+            
+            // Actualizar datos del usuario
+            currentUser.points = this.points;
+            currentUser.level = this.level;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          }
+        }
+        
+        addPoints(amount) {
+          const currentUser = this.authSystem.getCurrentUser();
+          if (!currentUser) return;
+
+          this.points += amount;
+          this.level = Math.floor(this.points / 100) + 1;
+          
+          // Guardar puntos específicos del usuario
+          const userKey = `securityPoints_${currentUser.id}`;
+          localStorage.setItem(userKey, this.points.toString());
+          
+          // Actualizar usuario
+          currentUser.points = this.points;
+          currentUser.level = this.level;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          
+          this.showNotification(`+${amount} puntos! 🏆 Nivel ${this.level}`);
+          this.updateUI();
+        }
+        
+        showNotification(message) {
+          const notification = document.createElement('div');
+          notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform transition-transform duration-300';
+          notification.textContent = message;
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => notification.remove(), 300);
+          }, 3000);
+        }
+
+        saveUserProgress() {
+          const currentUser = this.authSystem.getCurrentUser();
+          if (currentUser) {
+            currentUser.points = this.points;
+            currentUser.level = this.level;
+            currentUser.completedLessons = this.completedLessons;
+            currentUser.lessonsProgress = this.lessonsProgress;
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // También guardar en clave específica del usuario
+            const userKey = `securityPoints_${currentUser.id}`;
+            localStorage.setItem(userKey, this.points.toString());
+          }
+        }
+
+        completeLesson(lessonId, lessonName, pointsAwarded = 50) {
+          if (!this.completedLessons.includes(lessonId)) {
+            this.completedLessons.push(lessonId);
+            this.lessonsProgress[lessonId] = {
+              completed: true,
+              completedAt: new Date().toISOString(),
+              name: lessonName,
+              pointsAwarded: pointsAwarded
+            };
+            
+            this.addPoints(pointsAwarded);
+            this.saveUserProgress();
+            
+            return true;
+          }
+          return false;
+        }
+
+        isLessonCompleted(lessonId) {
+          return this.completedLessons.includes(lessonId);
+        }
+
+        updateUI() {
+          // Actualizar puntos en la navegación
+          const pointsDisplay = document.querySelector('.points-display');
+          if (pointsDisplay) {
+            pointsDisplay.textContent = `Nivel ${this.level} • ${this.points} pts`;
+          }
+          
+          // Actualizar ProgressCard
+          const levelDisplay = document.getElementById('levelDisplay');
+          const pointsDisplayCard = document.getElementById('pointsDisplay');
+          const progressText = document.getElementById('progressText');
+          const progressBar = document.getElementById('progressBar');
+          
+          if (levelDisplay) levelDisplay.textContent = `Nivel ${this.level}`;
+          if (pointsDisplayCard) pointsDisplayCard.textContent = `${this.points} puntos`;
+          if (progressText) progressText.textContent = `${this.points % 100}/100`;
+          if (progressBar) {
+            const progress = ((this.points % 100) / 100) * 100;
+            progressBar.style.width = `${progress}%`;
+          }
+        }
+      }
+      
+      // Inicializar sistemas  
+      window.authSystem = new AuthSystem();
+      window.gameSystem = new GameificationSystem();
+      
+      // Alias para compatibilidad
+      window.gameificationSystem = window.gameSystem;
+
+      // Verificar autenticación al cargar la página
+      document.addEventListener('DOMContentLoaded', () => {
+        window.authSystem.checkAuthAndRedirect();
+        window.gameSystem.updateUI();
+      });
+    </script>
+  </body>
+</html>

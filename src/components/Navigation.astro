@@ -1,0 +1,192 @@
+---
+// Componente de Navegación
+---
+
+<nav class="bg-white shadow-lg border-b border-blue-200 sticky top-0 z-50 transition-all duration-300" id="mainNavigation">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <h1 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+            🛡️ SecureLearn Pro
+          </h1>
+        </div>
+        <div class="hidden md:block">
+          <div class="ml-10 flex items-baseline space-x-4">
+            <a href="/" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Dashboard
+            </a>
+            <a href="/learning" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Micro-Learning
+            </a>
+            <a href="/simulator" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Simulador
+            </a>
+            <a href="/leaderboard" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+              Ranking
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Usuario logueado y puntos -->
+      <div class="hidden md:flex items-center space-x-4">
+        <!-- Indicador de puntos y nivel -->
+        <div class="bg-blue-50 px-3 py-1 rounded-full flex items-center gap-2">
+          <span class="points-display text-blue-600 font-medium text-sm">Nivel 0 • 0 pts</span>
+        </div>
+        
+        <!-- Menú de usuario -->
+        <div class="relative">
+          <button 
+            id="userMenuButton"
+            class="user-menu-button flex items-center gap-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
+          >
+            <div class="user-avatar w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              U
+            </div>
+            <span class="user-name text-gray-700 text-sm font-medium">Usuario</span>
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Dropdown menu -->
+          <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+            <div class="p-3 border-b border-gray-200">
+              <p class="user-email text-sm text-gray-600">usuario@ejemplo.com</p>
+              <p class="text-xs text-gray-500">Miembro desde hoy</p>
+            </div>
+            <div class="py-1">
+              <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Mi Perfil
+              </a>
+              <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                Configuración
+              </a>
+              <button 
+                id="logoutButton"
+                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botón móvil -->
+      <div class="md:hidden">
+        <button type="button" class="bg-gray-50 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" aria-controls="mobile-menu" aria-expanded="false">
+          <span class="sr-only">Abrir menú principal</span>
+          <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script para manejar la interfaz de usuario -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUserInterface();
+      
+      // Manejar dropdown del usuario
+      const userMenuButton = document.getElementById('userMenuButton');
+      const userDropdown = document.getElementById('userDropdown');
+      const logoutButton = document.getElementById('logoutButton');
+      
+      if (userMenuButton && userDropdown) {
+        userMenuButton.addEventListener('click', () => {
+          userDropdown.classList.toggle('hidden');
+        });
+        
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', (e) => {
+          if (!userMenuButton.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.classList.add('hidden');
+          }
+        });
+      }
+      
+      if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+          if (window.authSystem) {
+            window.authSystem.logout();
+          }
+        });
+      }
+    });
+
+    function updateUserInterface() {
+      if (window.authSystem && window.authSystem.isLoggedIn()) {
+        const user = window.authSystem.getCurrentUser();
+        
+        // Actualizar nombre
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+          userNameElement.textContent = user.name;
+        }
+        
+        // Actualizar email
+        const userEmailElement = document.querySelector('.user-email');
+        if (userEmailElement) {
+          userEmailElement.textContent = user.email;
+        }
+        
+        // Actualizar avatar
+        const userAvatarElement = document.querySelector('.user-avatar');
+        if (userAvatarElement) {
+          if (user.avatar) {
+            userAvatarElement.innerHTML = `<img src="${user.avatar}" alt="${user.name}" class="w-8 h-8 rounded-full">`;
+          } else {
+            userAvatarElement.textContent = user.name.charAt(0).toUpperCase();
+          }
+        }
+        
+        // Actualizar puntos
+        const pointsDisplay = document.querySelector('.points-display');
+        if (pointsDisplay) {
+          pointsDisplay.textContent = `Nivel ${user.level || 0} • ${user.points || 0} pts`;
+        }
+      }
+    }
+
+    // Actualizar interfaz cuando cambie el usuario
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'currentUser') {
+        updateUserInterface();
+      }
+    });
+
+    // Sticky Navigation con efectos de scroll
+    let lastScrollTop = 0;
+    const navigation = document.getElementById('mainNavigation');
+    
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down - mantener visible pero con sombra más prominente
+        navigation.style.transform = 'translateY(0)';
+        navigation.classList.add('shadow-xl');
+      } else {
+        // Scrolling up - asegurar que esté visible
+        navigation.style.transform = 'translateY(0)';
+        navigation.classList.add('shadow-xl');
+      }
+      
+      // Agregar/quitar sombra basado en la posición de scroll
+      if (scrollTop > 10) {
+        navigation.classList.add('shadow-xl', 'backdrop-blur-sm');
+        navigation.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+      } else {
+        navigation.classList.remove('shadow-xl', 'backdrop-blur-sm');
+        navigation.style.backgroundColor = 'rgb(255, 255, 255)';
+      }
+      
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+  </script>
+</nav>

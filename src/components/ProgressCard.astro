@@ -1,0 +1,38 @@
+---
+export interface Props {
+  points: number;
+  level: number;
+  nextLevelPoints?: number;
+  className?: string;
+}
+
+const { points, level, nextLevelPoints = (level * 100), className = "" } = Astro.props;
+const progress = ((points % 100) / 100) * 100;
+---
+
+<div id="progressCard" class={`bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-xl shadow-lg ${className}`}>
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-lg font-semibold">Tu Progreso</h3>
+      <p class="text-blue-100 text-sm">¡Sigue aprendiendo y subiendo de nivel!</p>
+    </div>
+    <div class="text-right">
+      <div id="levelDisplay" class="text-2xl font-bold">Nivel {level}</div>
+      <div id="pointsDisplay" class="text-blue-100 text-sm">{points} puntos</div>
+    </div>
+  </div>
+  
+  <div class="space-y-2">
+    <div class="flex justify-between text-sm">
+      <span>Progreso al siguiente nivel</span>
+      <span id="progressText">{points % 100}/100</span>
+    </div>
+    <div class="bg-white bg-opacity-20 rounded-full h-3">
+      <div 
+        id="progressBar"
+        class="bg-white rounded-full h-3 transition-all duration-500 ease-out"
+        style={`width: ${progress}%`}
+      ></div>
+    </div>
+  </div>
+</div>

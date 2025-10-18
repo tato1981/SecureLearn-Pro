@@ -1,0 +1,383 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Iniciar Sesión - SecureLearn Pro">
+  <div class="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <!-- Logo y título -->
+      <div class="text-center">
+        <div class="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4">
+          <span class="text-2xl">🛡️</span>
+        </div>
+        <h2 class="text-3xl font-bold text-white mb-2">SecureLearn Pro</h2>
+        <p class="text-blue-100">Inicia sesión para continuar tu aprendizaje</p>
+      </div>
+
+      <!-- Formulario de login -->
+      <div class="bg-white rounded-xl shadow-2xl p-8">
+        <form id="loginForm" class="space-y-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Correo electrónico
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="tu@empresa.com"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input
+                id="remember"
+                name="remember"
+                type="checkbox"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label for="remember" class="ml-2 block text-sm text-gray-700">
+                Recordarme
+              </label>
+            </div>
+            <a href="#" class="text-sm text-blue-600 hover:text-blue-500">
+              ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Iniciar Sesión
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="mt-6">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-500">O continúa con</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Login -->
+        <div class="mt-6">
+          <button
+            id="googleLogin"
+            type="button"
+            class="w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-3"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            <span id="googleButtonText">Continuar con Google</span>
+            <div id="googleSpinner" class="hidden w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+          </button>
+          
+          <!-- Indicador de modo demo -->
+          <div id="googleModeIndicator" class="hidden mt-2 text-center">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+              🎭 Modo Demo - Sin configuración requerida
+            </span>
+          </div>
+          
+          <!-- Contenedor para el botón nativo de Google (oculto) -->
+          <div id="googleButtonContainer" class="hidden mt-4"></div>
+        </div>
+
+        <!-- Registro -->
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-600">
+            ¿No tienes una cuenta?
+            <a href="/register" class="text-blue-600 hover:text-blue-500 font-medium">
+              Regístrate aquí
+            </a>
+          </p>
+        </div>
+
+        <!-- Demo access -->
+        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-800 mb-2">
+            <strong>Acceso de demostración:</strong>
+          </p>
+          <p class="text-xs text-blue-600 mb-2">
+            <strong>Login tradicional:</strong><br>
+            Email: admin@securelearn.co<br>
+            Contraseña: admin123
+          </p>
+          <p class="text-xs text-blue-500">
+            <strong>Google Demo:</strong> Usuarios aleatorios disponibles<br>
+            <span class="text-gray-500">• admin.google@gmail.com</span><br>
+            <span class="text-gray-500">• usuario.demo@gmail.com</span><br>
+            <span class="text-gray-500">• maria.garcia@gmail.com</span><br>
+            <span class="text-gray-500">• carlos.rodriguez@gmail.com</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts de autenticación -->
+  <script is:inline>
+    // Variables globales
+    let GoogleAuthService = null;
+    let GoogleAuthDemo = null;
+    let useRealGoogle = false; // Cambiar a true cuando tengas Client ID real
+
+    // Cargar servicios de Google Auth
+    async function loadGoogleAuthServices() {
+      try {
+        // Cargar demo siempre
+        const demoModule = await import('/src/services/google-auth-demo.js');
+        GoogleAuthDemo = demoModule.GoogleAuthDemo;
+        
+        // Intentar cargar servicio real
+        try {
+          const realModule = await import('/src/services/google-auth.js');
+          GoogleAuthService = realModule.GoogleAuthService;
+          
+          // Solo usar el real si está configurado correctamente
+          if (GoogleAuthService) {
+            await GoogleAuthService.initialize();
+            useRealGoogle = true;
+            console.log('✅ Google Auth Real cargado');
+          }
+        } catch (error) {
+          console.log('📝 Usando Google Demo (configuración real no disponible)');
+          useRealGoogle = false;
+        }
+        
+        // Inicializar demo como fallback
+        await GoogleAuthDemo.initialize();
+        
+      } catch (error) {
+        console.error('Error loading Google Auth Services:', error);
+      }
+    }
+
+    // Sistema de autenticación mejorado
+    class AuthSystem {
+      constructor() {
+        this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        this.initializeAuth();
+      }
+
+      initializeAuth() {
+        const loginForm = document.getElementById('loginForm');
+        const googleLogin = document.getElementById('googleLogin');
+
+        if (loginForm) {
+          loginForm.addEventListener('submit', this.handleLogin.bind(this));
+        }
+
+        if (googleLogin) {
+          googleLogin.addEventListener('click', this.handleGoogleLogin.bind(this));
+        }
+
+        // Verificar si ya está logueado
+        if (this.currentUser) {
+          this.redirectToDashboard();
+        }
+
+        // Cargar servicios de Google Auth
+        loadGoogleAuthServices();
+        
+        // Actualizar indicador de modo después de cargar servicios
+        setTimeout(() => {
+          this.updateGoogleModeIndicator();
+        }, 2000);
+      }
+
+      updateGoogleModeIndicator() {
+        const indicator = document.getElementById('googleModeIndicator');
+        if (indicator) {
+          if (!useRealGoogle) {
+            indicator.classList.remove('hidden');
+          }
+        }
+      }
+
+      async handleLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Validación básica con credenciales demo actualizadas
+        if (this.validateCredentials(email, password)) {
+          const user = {
+            id: Date.now(),
+            name: this.getNameFromEmail(email),
+            email: email,
+            loginMethod: 'email',
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this.getNameFromEmail(email))}&background=3b82f6&color=fff`,
+            level: 1, // Nivel inicial
+            points: 0, // Puntos iniciales
+            completedLessons: [], // Sin lecciones completadas
+            lessonsProgress: {}, // Sin progreso de lecciones
+            joinDate: new Date().toISOString()
+          };
+
+          this.setCurrentUser(user);
+          this.showNotification('¡Bienvenido! Sesión iniciada correctamente', 'success');
+          
+          setTimeout(() => {
+            this.redirectToDashboard();
+          }, 1500);
+        } else {
+          this.showNotification('Credenciales incorrectas. Intenta con admin@securelearn.co / admin123', 'error');
+        }
+      }
+
+      async handleGoogleLogin() {
+        const buttonText = document.getElementById('googleButtonText');
+        const spinner = document.getElementById('googleSpinner');
+        const button = document.getElementById('googleLogin');
+
+        // Verificar qué servicio usar
+        const authService = useRealGoogle ? GoogleAuthService : GoogleAuthDemo;
+        const authType = useRealGoogle ? 'Google Real' : 'Google Demo';
+
+        if (!authService) {
+          this.showNotification('Google Auth no está disponible. Intenta recargar la página.', 'error');
+          return;
+        }
+
+        try {
+          // Mostrar estado de carga
+          buttonText.textContent = useRealGoogle ? 'Conectando con Google...' : 'Simulando Google...';
+          spinner.classList.remove('hidden');
+          button.disabled = true;
+
+          // Intentar login con Google (real o demo)
+          const result = await authService.signIn();
+          
+          if (result.success) {
+            const user = {
+              id: Date.now(),
+              name: result.user.name,
+              email: result.user.email,
+              loginMethod: 'google',
+              avatar: result.user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(result.user.name)}&background=ea4335&color=fff`,
+              level: 1, // Nivel inicial
+              points: 0, // Puntos iniciales
+              completedLessons: [], // Sin lecciones completadas
+              lessonsProgress: {}, // Sin progreso de lecciones
+              googleId: result.user.sub,
+              authType: authType,
+              joinDate: new Date().toISOString()
+            };
+
+            this.setCurrentUser(user);
+            this.showNotification(`¡Bienvenido! Sesión iniciada con ${authType}`, 'success');
+            
+            setTimeout(() => {
+              this.redirectToDashboard();
+            }, 1500);
+          } else {
+            throw new Error(result.error || 'Error desconocido en Google Auth');
+          }
+        } catch (error) {
+          console.error('Google login error:', error);
+          this.showNotification(`Error al iniciar sesión con Google: ${error.message}`, 'error');
+        } finally {
+          // Restaurar estado del botón
+          buttonText.textContent = 'Continuar con Google';
+          spinner.classList.add('hidden');
+          button.disabled = false;
+        }
+      }
+
+      validateCredentials(email, password) {
+        // Credenciales demo actualizadas
+        const validCredentials = [
+          { email: 'admin@securelearn.co', password: 'admin123' },
+          { email: 'user@demo.co', password: 'user123' },
+          { email: 'instructor@securelearn.co', password: 'instructor123' },
+          // Mantener compatibilidad con credenciales anteriores
+          { email: 'demo@banco.com', password: 'demo123' },
+          { email: 'admin@banco.com', password: 'admin123' },
+          { email: 'empleado@banco.com', password: 'emp123' }
+        ];
+
+        return validCredentials.some(cred => 
+          cred.email === email && cred.password === password
+        );
+      }
+
+      getNameFromEmail(email) {
+        const names = {
+          'admin@securelearn.co': 'Administrador',
+          'user@demo.co': 'Usuario Demo',
+          'instructor@securelearn.co': 'Instructor',
+          'demo@banco.com': 'Usuario Demo',
+          'admin@banco.com': 'Administrador',
+          'empleado@banco.com': 'Empleado Banco'
+        };
+        return names[email] || email.split('@')[0];
+      }
+
+      setCurrentUser(user) {
+        this.currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        
+        // Sincronizar con el sistema de gamificación global
+        if (window.gameificationSystem) {
+          window.gameificationSystem.syncWithUser(user);
+        }
+      }
+
+      redirectToDashboard() {
+        window.location.href = '/';
+      }
+
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        const colors = {
+          success: 'bg-green-500',
+          error: 'bg-red-500',
+          info: 'bg-blue-500'
+        };
+        
+        notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+    }
+
+    // Inicializar sistema de autenticación cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      window.authSystem = new AuthSystem();
+    });
+  </script>
+</Layout>
