@@ -149,35 +149,72 @@ import Layout from '../layouts/Layout.astro';
     let GoogleAuthDemo = null;
     let useRealGoogle = false; // Cambiar a true cuando tengas Client ID real
 
-    // Cargar servicios de Google Auth
+    // Cargar servicios de Google Auth con manejo robusto
     async function loadGoogleAuthServices() {
       try {
-        // Cargar demo siempre
-        const demoModule = await import('/src/services/google-auth-demo.js');
-        GoogleAuthDemo = demoModule.GoogleAuthDemo;
+        console.log('🔄 Cargando servicios de autenticación...');
+        
+        // Cargar demo siempre - Usar ruta relativa para compatibilidad con build
+        try {
+          const demoModule = await import('../services/google-auth-demo.js');
+          GoogleAuthDemo = demoModule.GoogleAuthDemo;
+          console.log('✅ Google Auth Demo cargado exitosamente');
+        } catch (demoError) {
+          console.error('❌ Error cargando Google Demo:', demoError);
+          // Fallback si falla la carga del demo
+          console.warn('🚨 Creando sistema de demo básico como fallback');
+          GoogleAuthDemo = createFallbackDemo();
+        }
         
         // Intentar cargar servicio real
         try {
-          const realModule = await import('/src/services/google-auth.js');
+          const realModule = await import('../services/google-auth.js');
           GoogleAuthService = realModule.GoogleAuthService;
           
           // Solo usar el real si está configurado correctamente
           if (GoogleAuthService) {
             await GoogleAuthService.initialize();
             useRealGoogle = true;
-            console.log('✅ Google Auth Real cargado');
+            console.log('✅ Google Auth Real cargado y configurado');
           }
         } catch (error) {
-          console.log('📝 Usando Google Demo (configuración real no disponible)');
+          console.log('📝 Usando Google Demo (configuración real no disponible):', error.message);
           useRealGoogle = false;
         }
         
         // Inicializar demo como fallback
-        await GoogleAuthDemo.initialize();
+        if (GoogleAuthDemo) {
+          await GoogleAuthDemo.initialize();
+        }
         
       } catch (error) {
-        console.error('Error loading Google Auth Services:', error);
+        console.error('❌ Error crítico loading Google Auth Services:', error);
+        // Crear un sistema básico de emergencia
+        createEmergencyAuthSystem();
       }
+    }
+
+    // Sistema de demo básico como fallback
+    function createFallbackDemo() {
+      return {
+        initialize: () => Promise.resolve(),
+        signInWithPopup: () => Promise.resolve({
+          user: {
+            sub: '100000000000000000001',
+            email: 'demo@securelearn.com',
+            name: 'Usuario Demo',
+            picture: 'https://ui-avatars.com/api/?name=Demo&background=4285f4&color=fff&size=128'
+          }
+        }),
+        signOut: () => Promise.resolve()
+      };
+    }
+
+    // Sistema de emergencia
+    function createEmergencyAuthSystem() {
+      console.warn('🚨 Activando sistema de autenticación de emergencia');
+      GoogleAuthDemo = createFallbackDemo();
+      useRealGoogle = false;
     }
 
     // Sistema de autenticación mejorado
