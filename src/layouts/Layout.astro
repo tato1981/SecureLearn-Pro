@@ -21,10 +21,6 @@ const { title, description = "Plataforma de Micro-Learning Gamificada para Ciber
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Google Sign-In SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
   </head>
   <body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900 font-sans">
     <main class="relative">
@@ -32,26 +28,11 @@ const { title, description = "Plataforma de Micro-Learning Gamificada para Ciber
     </main>
     
     <!-- Scripts para gamificación y autenticación -->
-    <script src="/src/services/google-auth.js"></script>
     <script is:inline>
       // Sistema de autenticación
       class AuthSystem {
         constructor() {
           this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-          this.googleAuth = null;
-          this.initializeGoogleAuth();
-        }
-
-        async initializeGoogleAuth() {
-          try {
-            // Esperar a que el SDK de Google esté disponible
-            if (typeof GoogleAuthService !== 'undefined') {
-              this.googleAuth = new GoogleAuthService();
-              await this.googleAuth.initialize();
-            }
-          } catch (error) {
-            console.warn('Google Auth no disponible:', error);
-          }
         }
 
         isLoggedIn() {
@@ -73,11 +54,6 @@ const { title, description = "Plataforma de Micro-Learning Gamificada para Ciber
         }
 
         logout() {
-          // Cerrar sesión de Google si es necesario
-          if (this.currentUser && this.currentUser.loginMethod === 'google' && this.googleAuth) {
-            this.googleAuth.signOut();
-          }
-          
           localStorage.removeItem('currentUser');
           localStorage.removeItem('securityPoints');
           this.currentUser = null;
